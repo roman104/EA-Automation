@@ -1,0 +1,15 @@
+{
+    "python.autoComplete.extraPaths": [
+    
+    ]
+    "terminal.integrated.env.osx": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+    },
+    "terminal.integrated.env.linux": {
+        "PYTHONPATH": "${workspaceFolder}/src",
+    },
+    "terminal.integrated.env.windows": {
+        "PYTHONPATH": "${workspaceFolder}/01.Backup2EAPX//02.BackupEAP",
+    },
+    "python.envFile": "${workspaceFolder}/.env"
+}

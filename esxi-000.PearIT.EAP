@@ -1,0 +1,1 @@
+EAConnectString:ESXi-000.PearIT --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=WSXi-000.PearIT;LazyLoad=1;

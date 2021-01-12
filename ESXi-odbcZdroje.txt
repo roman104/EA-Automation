@@ -1,0 +1,94 @@
+POZOR treba prekonfigurovat ODBC z AMRIA na MySLQ, niekedy to nejde - emty repository???
+ESXi-000.PearIT
+ESXi-000_ea_agnicoli_ci
+ESXi-001_ea_hp_ci
+ESXi-001_ea_tenis
+ESXi-002_ea_xmind_enterprise
+    ESXi-003_ea_ecd-problem so strukturou modelu, 234kb, odbc - maria db,
+    ESXi-003_ea_ecd_Mysql - to iste
+ESXi-004_ea_share_emotion
+    ESXi-005_ea_smartball-prazdny model
+ESXi-005_ea_smartball2-admin, Q
+ESXi-006_ea_keep_in_order
+ESXi-007_ae_education_01
+ESXi-011_ea_astro_chrono_graph
+ESXi-012_ea_mdg
+ESXi-013_systemthinking
+ESXi-015_filip
+ESXi-017_AgnicoliCloudServices
+ESXi-050_01_MB_7Ds
+ESXi-050_MB_7Ds
+ESXi-051_mdg_dev_7ds
+ESXi-052_MDB_7D_EN
+ESXi-060_MDG_APV_EN_DevEnv
+ESXi-060_MDG_APV_EN_MySQL
+    ESXi-100_01_MDG_7d-missing data
+ESXi-100_ea_letech
+ESXi-100_ea_letech_ci
+ESXi-101_ea_slovres
+ESXi-101_ea_slovres_ci
+ESXi-102_ea_vw_ci
+ESXi-104_ea_nssr
+ESXi-106_union
+ESXi-107_infraservices
+ESXi-108_energotel
+ESXi-111_datalan
+    ESXi-200_ea_wabash-empty model
+ESXi-700_01_ea_mdg_7d
+ESXi-agnicoliprivateDB
+ESXi-db85585x031-Synergy
+ESXi-ea_tenis
+ESxi-ea-test
+
+
+    QNAP-000.PearIT-repositoy missing
+QNAP-000_ea_hp_ci
+QNAP-001_Agnicoli
+QNAP-001_ea_tenis
+QNAP-011_ea_astro_chrono_graph
+QNAP-013_systemthinking-QNAP
+QNAP-017_AgnicoliCloudServices
+    QNAP-060_MDG_APV_EN_DevEnv. - no repository
+QNAP-3rsv01, missing repo
+QNAP-agnicoli.privateDB
+QNAP-hp_000_ea_agnicoli_ci, missing repository
+QNAP-hp_001_ea_hp_ci
+QNAP-hp_002_ea_xmind_enterprise
+QNAP-hp_003_ea_ecd
+QNAP-hp_004_ea_share_emotion
+QNAP-hp_005_ea_smartball
+QNAP-hp_005_ea_smartball2
+QNAP-hp_006_ea_keep_in_order
+QNAP-hp_007_ae_education_01
+QNAP-hp_012_ea_mdg
+QNAP-hp_013_systemthinking
+QNAP-hp_015_filip
+QNAP-hp_017_AgnicoliCloudSer
+QNAP-hp_050_01_MB_7Ds
+QNAP-hp_050_MB_7Ds
+QNAP-hp_051_mdg_dev_7ds
+QNAP-hp_052_MDB_7D_EN
+QNAP-hp_100_01_MDG_7d
+QNAP-hp_100_ea_letech
+QNAP-hp_100_ea_letech_ci
+QNAP-hp_101_ea_slovres
+QNAP-hp_101_ea_slovres_ci
+QNAP-hp_102_ea_vw_ci
+QNAP-hp_104_ea_nssr
+QNAP-hp_106_union
+QNAP-hp_107_infraservices
+QNAP-hp_108_energotel
+QNAP-hp_111_datalan
+QNAP-hp_200_ea_wabash
+QNAP-hp_700_01_ea_mdg_7d
+QNAP-hp_agnicoliprivateDB
+QNAP-hp_db85585x031
+QNAP-hp_ea_tenis
+QNAP-hp_ea-test
+
+
+
+EXOH_014-NewParadigma
+EXOH_020-STHDF-2018_MySQL, 
+EXOH-021-STHDF-2019_MySQL
+EXOH_EAUSER
