@@ -49,7 +49,7 @@ MyRepository=None # Handler to the current repository EA object
 #MySourcesList=  #type <List of str> of Connection Strings suitable for API
 MyConnectionsList = [] # type <list> list of connection string from Model Shortcuts
 MyRepositoryList = []  # Type Lis of Dictionary, complete list of all repositories with all parameters
-RepositoyID=""  #Important for Export To Native- folder name    <MyDestinationFolderNATIVE>\<RepositoryID>
+RepositoryID=""  #Important for Export To Native- folder name    <MyDestinationFolderNATIVE>\<RepositoryID>
 MyDestinationFolderRoot ="1234"   # type <str> in case of EAPX target , it is root folder for backups
 MyDestinationFolderEAPX =""     # <MyDestinationFolderRoot>\<YYYYMMDD>\<EAPX>
 MyDestinationFolderNATIVE=""    #  <MyDestinationFolderRoot>\<YYYYMMDD>\<NATIVE>
@@ -63,8 +63,8 @@ MyJournal =  ""           #Backup Scope - Name of Journal file: <DestinationName
 MyJournalPostfix = "_Journal" #
 MyOutputFormat=[] #list of formats
 # Developing Variables
-Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
-#Version = 'Release'
+#Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
+Version = 'Release'
 MY_ADDRESS = 'webadmin@agnicoli.org'
 PASSWORD = '123456'
 # Tracking, debugging
@@ -136,14 +136,14 @@ def readConfigFile():
     i=0
     #go through all items at 1st level
     for item, doc in MyConfigRepo.items():
-        if(Version=='Demo'):print("##Item, doc:\n",i,"=",item, ":", doc,"\n")
+        progressTracking("##Item, doc:\n"+str(i)+"="+str(item)+ ":"+ str(doc)+"\n")
         i=i+1
         #go trough all items in Source level
         if(item == 'Sources'):
             j=1
             MyRepositoryList.append(doc)
             for item1  in doc:
-                if(Version=='Demo'):print("\ttype=",type(item),"###Source:",j,"=",item1)
+                progressTracking("\ttype="+str(type(item))+"###Source:"+str(j)+"="+str(item1))
                 #MyConnectionsList.append(doc[item1]["ToBeBackuped"])
                 #(doc[item1]["Description"])
                 MyConnectionsList.append(doc[item1]["ConnectionString"])
@@ -162,10 +162,13 @@ def readConfigFile():
 
     l=0
     for s in MyConnectionsList:
-        if(Version=='Demo'):print("#ListOfSources:",l,"=",s)
+        progressTracking("#ListOfSources:"+str(l)+"="+str(s))
         l=l+1
-    if(Version=='Demo'):print("=======================Config File Has been red==================================")
-    if(Version=='Demo'):print ("MyJornalFile=",MyJournalFile)
+    progressTracking("=======================Config File Has been red==================================")
+
+    progressTracking("MyJornalFile="+MyJournalFile)
+    
+    progressJournal("----------------------------------------Backup started")
     progressJournal("MyJournalFile="+MyJournalFile)
     return
 
@@ -240,6 +243,8 @@ def closeApp(eaApp):
         MyRepository.Exit()
     else:
         a=1
+
+    progressJournal("=============================================Backup Ended")
     return 
 # ======================================
 
@@ -265,17 +270,21 @@ def read_yaml(ConfigFile):
 def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
     global aeApp
-
-    if(Version=='Demo'):
-        print("TransmitDBMS2EAPX",MySourceString, MyDestinationString, MyLogFile, MyJournal)  
-        print(time.strftime('%Y%m%d%H%M'),MySourceString)
-        
-    else:
-        progressTracking("TransmitDBMS2EAPX starts:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-        progressJournal("TransmitDBMS2EAPX starts:\n"+"MySourceString="+ MySourceString +"\n" \
+    global RepositoryID
+    progressTracking("TransmitDBMS2EAPX starts:\n"+"-"+RepositoryID+"\n"+MySourceString+"\n"+ MyDestinationString+"\n"+ MyLogFile+"\n"+ MyJournal)
+    progressJournal("TransmitDBMS2EAPX starts:\n"+"MySourceString="+ MySourceString +"\n" \
                     +"MyDestinationString="+MyDestinationString+"\n" \
                     +"MyLogFile="+ MyLogFile+"\n" \
                     + "MyJournal="+MyJournal)
+    if(Version == 'Release'):
+    #     print("TransmitDBMS2EAPX starts:\n"+"MySourceString=" + MySourceString + "\n"
+    #           + "MyDestinationString="+MyDestinationString+"\n"
+    #           + "MyLogFile=" + MyLogFile+"\n"
+    #           + "MyJournal="+MyJournal)
+    #     print(time.strftime('%Y%m%d%H%M'), MySourceString)
+        
+    
+        
         try:
             
             #REM Transfer Project based on connection string to target file (maybe another connection string)
@@ -290,7 +299,9 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
             progressJournal("TransmitDBMS2EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
             progressTracking("TransmitDBMS2EAPX EXCEPTION:\n"+"-"+MySourceString)
             
-        progressTracking("TransmitDBMS2EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+        #progressTracking("TransmitDBMS2EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+        progressTracking("TransmitDBMS2EAPX:\n"+"-"+RepositoryID+"exported successfuly")
+        progressJournal("TransmitDBMS2EAPX :\n"+ RepositoryID+"exported successfuly")
     return
     # ======================================
     #-------------------------------------------------------------
@@ -301,20 +312,23 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
 # Date:
 # Purpose:exportAllSources2NativeXML
 def exportAllSources2EAPX ( ):
-
+    global RepositoryID
     for OneRepo in MyRepositoryList[0]:
     
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
+        RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
         if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
             
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
             transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
         else:
-            if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
-            progressTracking("Skipped="+OneSource.split('---')[0])
-            progressJournal("Skipped="+OneSource.split('---')[0])
+            #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
+            #progressTracking("Skipped="+OneSource.split('---')[0])
+            #progressJournal("Skipped="+OneSource.split('---')[0])
+            progressTracking("Skipped="+RepositoryID)
+            progressJournal("Skipped="+RepositoryID)
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -331,15 +345,16 @@ def exportAllSources2NativeXML( ):
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
         if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
+            
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
             
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForNATIVE(OneSource)
            
             transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJournal)
         else:
-            if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
-            progressTracking("Skipped="+OneSource.split('---')[0])
-            progressJournal("Skipped="+OneSource.split('---')[0])
+            #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
+            progressTracking("Skipped="+RepositoryID)
+            progressJournal("Skipped="+RepositoryID)
 
     return True
 # ======================================
@@ -353,14 +368,13 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
     global MyDestinationFolderNATIVE
     global RepositoryID
     MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
-    
+    progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+    progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     if(Version=='Demo'):
-        print("TransmitDBMS2XMLNative",MySourceString, MyDestinationString, MyLogFile, MyJournal)  
-        print(time.strftime('%Y%m%d%H%M'),MySourceString)
+       A=0
         
     else:
-        progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-        progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+        
         try:
             
             #REM Transfer Project based on connection string to target file (maybe another connection string)
