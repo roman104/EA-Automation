@@ -1,0 +1,55 @@
+#This file contains config information for daily backup
+#date: 20210119-1700
+#Name: Config file
+#Author: Roman Kazicka
+
+#Destination repositories
+
+Destinations:
+    DestinationFolderRoot: "M:\\77.Backup"
+
+# Destination type
+#EAPX, DBMS, Native
+Destination Type:
+    - EAPX
+    - DBMS
+    - NATIVE
+#
+
+#Source repositories
+Sources:
+    1:
+        SourceID: "QNAP-000_ea_hp_ci"
+        ToBeBackuped: No
+        Description: "HP Repositoru - 2008-2016"
+        ConnectionString: "EAConnectString:QNAP-000_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-000_ea_hp_ci;LazyLoad=1;"
+    2:
+        SourceID: "QNAP-000_ea_hp_ci"
+        ToBeBackuped: no
+        Description: "Agnicoli repository"
+        ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
+    3:
+        SourceID: "QNAP-001_ea_tenis"
+        ToBeBackuped: No
+        Description: "Mobile game Tenis"
+        ConnectionString: "EAConnectString:QNAP-001_ea_tenis --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_tenis;LazyLoad=1;"
+    4:
+        SourceID: "QNAP-011_ea_astro_chrono_graph"
+        ToBeBackuped: no
+        Description: "astro chrono graph"
+        ConnectionString: "EAConnectString:QNAP-011_ea_astro_chrono_graph --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_ea_astro_chrono_graph;LazyLoad=1;"
+    5:
+        SourceID: "QNAP-013_systemthinking-QNAP"
+        ToBeBackuped: no
+        Description: "astro chrono graph"
+        ConnectionString: "EAConnectString:QNAP-013_systemthinking-QNAP --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-013_systemthinking-QNAP;LazyLoad=1;"
+    6:
+        SourceID:  "QNAP-017_AgnicoliCloudServices"
+        ToBeBackuped: No
+        Description: "Cloud Services - Sparx Cloud Servver"
+        ConnectionString: "EAConnectString:QNAP-017_AgnicoliCloudServices --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-017_AgnicoliCloudServices;LazyLoad=1;"
+    7:
+        SourceID: "Qnap"
+        ToBeBackuped: No
+        Description: ""
+        ConnectionString: ""
