@@ -1,15 +1,24 @@
 # Backup Automation
 # version 1.0
 # author: Roman Kazicka  inspired by Maros Zvolensky
+# copyright: ** IMPORTANT NOTICE: All procedures, workflow, 
+#  used in this program are Copyright (C) 2021 by
+#  Roman Kazicka (Roman.Kazicka@agnicoli.org, http://www.agnicoli.org).
+#  Permission is granted to freely use, modify, and distribute these
+#  routines provided these credits and notices remain unmodified with any
+#  altered or distributed versions of the program.
+
 # Scope: automation script that will perform project transfer based on config file
 # Sources: Sparxsystems, enterprise-architect-object-model.pdf
 # Name: Backup EA model into EAPX files
 # Description: Automate routine backups from client side into EAPX files, Native Format, other DBMS repository
-# Inputs:  Configuration file
+# Inputs:  Configuration file= 
 # Date: 20201201
 # change log
 
-# Last change: 20210107
+# LAst Change: 20210122
+#   journal, progress tracking tuning
+# # change: 20210107
 # Descrition of last change
 # - creation the app stucture - function definition 
 
@@ -46,6 +55,7 @@ MyConfigFile="A:\\26.PrehladModelov\\13.Automation\\01.Backups\\02.Roman\\01.BAc
 MyConfigRepo=None
 eaApp=None      # activeX handler
 MyRepository=None # Handler to the current repository EA object 
+MyProject = None # Handler to EA Object
 #MySourcesList=  #type <List of str> of Connection Strings suitable for API
 MyConnectionsList = [] # type <list> list of connection string from Model Shortcuts
 MyRepositoryList = []  # Type Lis of Dictionary, complete list of all repositories with all parameters
@@ -76,7 +86,7 @@ PASSWORD = '123456'
 TrackingLevel = 0  
 MyJournalFileFolder=""    # Finame to journal file - logfile for the whole process of backup
 MyJournalFile =""
-
+DestinationConnectionString="EAConnectString:QNAP-011_BAK --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_BAK;LazyLoad=1;"
 # ============================
 #-------------------------------------------------------------
 # 
@@ -89,6 +99,8 @@ def initBackup():
     global eaApp
     global MyConfigFile
     global MyJournalFile
+    global MyProject
+    global MyRepository
 
     print("\t\t\t>>>>>>>>> EA Backup Version =  {}  <<<<<<<<<<<<<<<<".format(Version).upper())
     progressTracking("Backup Init")
@@ -98,7 +110,11 @@ def initBackup():
     #-----------------------------------------------------------------EA 
     if(Version=='Release'):
         eaApp = win32com.client.Dispatch("EA.App") #call EA application
-      
+      #REM Transfer Project based on connection string to target file (maybe another connection string)
+        MyRepository = eaApp.Repository
+            #Repository.Windows()
+        MyProject = MyRepository.GetProjectInterface()
+            #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
     else:
        True
     
@@ -269,6 +285,7 @@ def read_yaml(ConfigFile):
 # Purpose: just copy and pASTE if you need new function
 def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
+    global MyProject
     global aeApp
     global RepositoryID
     progressTracking("TransmitDBMS2EAPX starts:\n"+"-"+RepositoryID+"\n"+MySourceString+"\n"+ MyDestinationString+"\n"+ MyLogFile+"\n"+ MyJournal)
@@ -288,10 +305,10 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
         try:
             
             #REM Transfer Project based on connection string to target file (maybe another connection string)
-            MyRepository = eaApp.Repository
+        #    MyRepository = eaApp.Repository
             #Repository.Windows()
-            Project = MyRepository.GetProjectInterface()
-            ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
+        #    Project = MyRepository.GetProjectInterface()
+            ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
             
             #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
         except:
@@ -320,9 +337,16 @@ def exportAllSources2EAPX ( ):
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
         if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
-            
-            MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
-            transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+            if(True ):
+                # To file
+                MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
+                transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+            else:
+                #To DBMS
+                MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
+                MyDestinationString=DestinationConnectionString
+                transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+                True
         else:
             #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
             #progressTracking("Skipped="+OneSource.split('---')[0])
@@ -364,10 +388,13 @@ def exportAllSources2NativeXML( ):
 # Purpose: just copy and pASTE if you need new function
 def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
+    global MyProject
     global aeApp
     global MyDestinationFolderNATIVE
     global RepositoryID
+    
     MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
+    ExistDestinationDir(MyDestinationFolderXMLNATIVE)
     progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     if(Version=='Demo'):
@@ -378,12 +405,12 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
         try:
             
             #REM Transfer Project based on connection string to target file (maybe another connection string)
-            MyRepository = eaApp.Repository
+        #    MyRepository = eaApp.Repository
             #Repository.Windows()
-            Project = MyRepository.GetProjectInterface()
+        #    Project = MyRepository.GetProjectInterface()
             #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
            
-            ret=Project.ExportProjectXML(MyDestinationFolderXMLNATIVE)
+            ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
             
             
             #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
@@ -444,15 +471,17 @@ def prepareParametersForNATIVE(MyOneSource):
     global MyDestinationFolderNATIVE
     global MyJournal
     global DestinationFolderWithDate
-   
+    global RepositoryID
     a=MyOneSource.split(':')
     b=a[1].split('---')
     ModelName=b[0].strip()
     MyConnectionString=b[1].strip()
     
     ExistDestinationDir(MyDestinationFolderNATIVE)
-    DestinationFolderWithDate=MyDestinationFolderNATIVE + "\\" + time.strftime('%Y%m%d')
+    DestinationFolderWithDate=MyDestinationFolderNATIVE + "\\" + time.strftime('%Y%m%d')+'\\'+RepositoryID
     ExistDestinationDir(DestinationFolderWithDate)
+    ExistDestinationDir(MyDestinationFolderNATIVE)
+    
     MyDestinationString=DestinationFolderWithDate + '\\' + ModelName + '_' + time.strftime('%Y%m%d-%H%M') + '.eapx'
     MyLogFile=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyLogFilePostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'
     MyJournal=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyJournalPostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'

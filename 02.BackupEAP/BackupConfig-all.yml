@@ -41,16 +41,16 @@ Sources:
         ConnectionString: "EAConnectString:QNAP-011_ea_astro_chrono_graph --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_ea_astro_chrono_graph;LazyLoad=1;"
     5:
         SourceID: "QNAP-013_systemthinking-QNAP"
-        ToBeBackuped: no
+        ToBeBackuped: Yes
         Description: "astro chrono graph"
         ConnectionString: "EAConnectString:QNAP-013_systemthinking-QNAP --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-013_systemthinking-QNAP;LazyLoad=1;"
     6:
         SourceID:  "QNAP-017_AgnicoliCloudServices"
-        ToBeBackuped: No
+        ToBeBackuped: Yes
         Description: "Cloud Services - Sparx Cloud Servver"
         ConnectionString: "EAConnectString:QNAP-017_AgnicoliCloudServices --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-017_AgnicoliCloudServices;LazyLoad=1;"
     7:
-        SourceID: "Qnap"
+        SourceID: "LAST ITEM"
         ToBeBackuped: No
         Description: ""
         ConnectionString: "End Of List"
