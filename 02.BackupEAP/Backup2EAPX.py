@@ -291,10 +291,11 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
     global MyProject
     global aeApp
     global RepositoryID
-    progressTracking("TransmitDBMS2EAPX starts:\n"+"-"+RepositoryID+"\n"+MySourceString+"\n"+ MyDestinationString+"\n"+ MyLogFile+"\n"+ MyJournal)
-    progressJournal("TransmitDBMS2EAPX starts:\n"+"MySourceString="+ MySourceString +"\n" \
-                    +"MyDestinationString="+MyDestinationString+"\n" \
-                    +"MyLogFile="+ MyLogFile+"\n" \
+    progressTracking("TransmitDBMS2EAPX starts:\n\t"+"-----------------------------------"+RepositoryID+"\n\t" \
+                     +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
+    progressJournal("TransmitDBMS2EAPX starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
+                    +"MyDestinationString="+MyDestinationString+"\n\t" \
+                    +"MyLogFile="+ MyLogFile+"\n\t" \
                     + "MyJournal="+MyJournal)
     if(Version == 'Release'):
     #     print("TransmitDBMS2EAPX starts:\n"+"MySourceString=" + MySourceString + "\n"
@@ -320,8 +321,8 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
             progressTracking("TransmitDBMS2EAPX EXCEPTION:\n"+"-"+MySourceString)
             
         #progressTracking("TransmitDBMS2EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-        progressTracking("TransmitDBMS2EAPX:\n"+"-"+RepositoryID+"exported successfuly")
-        progressJournal("TransmitDBMS2EAPX :\n"+ RepositoryID+"exported successfuly")
+        progressTracking("TransmitDBMS2EAPX:\n"+"-"+RepositoryID+":"+"exported successfuly")
+        progressJournal("TransmitDBMS2EAPX :\n"+ RepositoryID+":"+"exported successfuly")
     return
     # ======================================
     #-------------------------------------------------------------
@@ -383,8 +384,8 @@ def exportAllSources2NativeXML( ):
             progressTracking("Skipped="+RepositoryID)
             progressJournal("Skipped="+RepositoryID)
         
-        progressTracking("TransmitDBMS2_NATIVE_XML:\n"+"-"+RepositoryID+"exported successfuly")
-        progressJournal("TransmitDBMS2_NATIVE_XML :\n"+ RepositoryID+"exported successfuly")
+        progressTracking("TransmitDBMS2_NATIVE_XML:\n"+"-"+RepositoryID+":"+"exported successfuly")
+        progressJournal("TransmitDBMS2_NATIVE_XML :\n"+ RepositoryID+":"+"exported successfuly")
     return True
 # ======================================
 # Template function
@@ -400,10 +401,11 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
     
     MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
     ExistDestinationDir(MyDestinationFolderXMLNATIVE)
-    progressTracking("TransmitDBMS2_NATIVE_XML starts:\n"+"-"+RepositoryID+"\n"+MySourceString+"\n"+ MyDestinationString+"\n"+ MyLogFile+"\n"+ MyJournal)
-    progressJournal("TransmitDBMS2_NATIVE_XML starts:\n"+"MySourceString="+ MySourceString +"\n" \
-                    +"MyDestinationString="+MyDestinationString+"\n" \
-                    +"MyLogFile="+ MyLogFile+"\n" \
+    progressTracking("TransmitDBMS2_NATIVE_XML starts:\n\t"+"------------------------------------"+RepositoryID+"\n\t" \
+                    +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
+    progressJournal("TransmitDBMS2_NATIVE_XML starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
+                    +"MyDestinationString="+MyDestinationString+"\n\t" \
+                    +"MyLogFile="+ MyLogFile+"\n\t" \
                     + "MyJournal="+MyJournal)
     #progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     #progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
@@ -613,6 +615,7 @@ def myMain():
     
     readCmds()
     performActions("Backup2EAPX")
+
     performActions("Backup2XML")
     notification()
     closeApp(eaApp)
