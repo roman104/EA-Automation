@@ -64,9 +64,9 @@ MyConnectionsList = [] # type <list> list of connection string from Model Shortc
 MyRepositoryList = []  # Type Lis of Dictionary, complete list of all repositories with all parameters
 RepositoryID=""  #Important for Export To Native- folder name    <MyDestinationFolderNATIVE>\<RepositoryID>
 MyDestinationFolderRoot ="1234"   # type <str> in case of EAPX target , it is root folder for backups
-MyDestinationFolderEAPX =""     # <MyDestinationFolderRoot>\<YYYYMMDD>\<EAPX>
-MyDestinationFolderNATIVE=""    #  <MyDestinationFolderRoot>\<YYYYMMDD>\<NATIVE>
-DestinationFolderWithDate = ""   # <MyDestinationFolderRoot>\<YYYYMMDD>
+MyDestinationFolderEAPX =""     # <MyDestinationFolderRoot>\<YYYY>\<EAPX>\<YYYYMMDD>
+MyDestinationFolderNATIVE=""    #  <MyDestinationFolderRoot>\<YYYY><NATIVE>\<YYYYMMDD>
+#DestinationFolderWithDate = ""   # <MyDestinationFolderRoot>\<YYYYMMDD>-local variable
 MySourceString = ""       #Sparx scope- onnection string for source, this string is model shortcut string generated from EA
 MyDestinationString = ""  #Sparx scope- Connection string to Destination
 MyLogFile =  ""           #Sparx scope- Name of Logfile  <DestinationName>_<YYYYMMDD-HHMM>.EAPX
@@ -77,6 +77,7 @@ MyJournalPostfix = "_Journal" #
 MyOutputFormat=[] #list of formats
 # Developing Variables
 #Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
+            # all EA components calls are skipped for better debugging
 Version = 'Release'
 MY_ADDRESS = 'webadmin@agnicoli.org'
 PASSWORD = '123456'
@@ -156,6 +157,7 @@ def readConfigFile():
     #go through all items at 1st level
     for item, doc in MyConfigRepo.items():
         progressTracking("##Item, doc:\n"+str(i)+"="+str(item)+ ":"+ str(doc)+"\n")
+        #progressJournal("##Item, doc:\n"+str(i)+"="+str(item)+ ":"+ str(doc)+"\n")--
         i=i+1
         #go trough all items in Source level
         if(item == 'Sources'):
@@ -171,9 +173,9 @@ def readConfigFile():
                 j=j+1
         elif (item=='Destinations'):
             MyDestinationFolderRoot=doc["DestinationFolderRoot"]
-            MyDestinationFolderEAPX=MyDestinationFolderRoot+'\\'+'EAPX'
-            MyDestinationFolderNATIVE=MyDestinationFolderRoot+'\\'+'NATIVE'
-            MyJournalFileFolder=doc["MyJournalFile"]
+            MyDestinationFolderEAPX=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'EAPX'
+            MyDestinationFolderNATIVE=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'NATIVE'
+            MyJournalFileFolder=doc["MyJournalFile"]+"\\"+time.strftime('%Y')
             MyJournalFile=MyJournalFileFolder+"\\"+time.strftime('%Y%m%d')+"_"+"Backup_LogFile"+".txt"
             ExistDestinationDir(MyJournalFileFolder)
         elif (item=='Destination Type'):
@@ -186,7 +188,7 @@ def readConfigFile():
     progressTracking("=======================Config File Has been red==================================")
 
     progressTracking("MyJornalFile="+MyJournalFile)
-    
+    progressJournal("Config File Has been red")
     progressJournal("----------------------------------------Backup started")
     progressJournal("MyJournalFile="+MyJournalFile)
     return
@@ -346,17 +348,15 @@ def exportAllSources2EAPX ( ):
                 MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
                 transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
             else:
-                #To DBMS
+                #To DBMS- TODO - Why this doesn't work? Not Implemented by Sparx?
                 MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
                 MyDestinationString=DestinationConnectionString
                 transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
                 True
         else:
-            #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
-            #progressTracking("Skipped="+OneSource.split('---')[0])
-            #progressJournal("Skipped="+OneSource.split('---')[0])
-            progressTracking("Skipped="+RepositoryID)
-            progressJournal("Skipped="+RepositoryID)
+            
+            progressTracking(" _______________________  Skipped="+RepositoryID)
+            progressJournal("  _______________________  Skipped="+RepositoryID)
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -377,15 +377,15 @@ def exportAllSources2NativeXML( ):
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
             
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForNATIVE(OneSource)
-           
+            
             transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJournal)
         else:
-            #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
-            progressTracking("Skipped="+RepositoryID)
-            progressJournal("Skipped="+RepositoryID)
+            
+            progressTracking(" _________________________ Skipped="+RepositoryID)
+            progressJournal(" ___________________________Skipped="+RepositoryID)
         
-        progressTracking("TransmitDBMS2_NATIVE_XML:\n"+"-"+RepositoryID+":"+"exported successfuly")
-        progressJournal("TransmitDBMS2_NATIVE_XML :\n"+ RepositoryID+":"+"exported successfuly")
+        progressTracking(" ++++++++++++++++++++++++++  TransmitDBMS2_NATIVE_XML:"+"-"+RepositoryID+":"+"exported successfuly")
+        progressJournal(" +++++++++++++++++++++++++++ TransmitDBMS2_NATIVE_XML :"+ RepositoryID+":"+"exported successfuly")
     return True
 # ======================================
 # Template function
@@ -401,35 +401,32 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
     
     MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
     ExistDestinationDir(MyDestinationFolderXMLNATIVE)
-    progressTracking("TransmitDBMS2_NATIVE_XML starts:\n\t"+"------------------------------------"+RepositoryID+"\n\t" \
+    progressTracking("  >>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\n\t"+"------------------------------------"+RepositoryID+"\n\t" \
                     +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
-    progressJournal("TransmitDBMS2_NATIVE_XML starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
+    progressJournal(">>>>>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
                     +"MyDestinationString="+MyDestinationString+"\n\t" \
                     +"MyLogFile="+ MyLogFile+"\n\t" \
                     + "MyJournal="+MyJournal)
     #progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     #progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-    if(Version=='Demo'):
-       A=0
+    
         
-    else:
+    try:
         
-        try:
-            
-            #REM Transfer Project based on connection string to target file (maybe another connection string)
-        #    MyRepository = eaApp.Repository
-            #Repository.Windows()
-        #    Project = MyRepository.GetProjectInterface()
-            #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
-           
+        #REM Transfer Project based on connection string to target file (maybe another connection string)
+    #    MyRepository = eaApp.Repository
+        #Repository.Windows()
+    #    Project = MyRepository.GetProjectInterface()
+        #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
+        if(Version=='Release'):
             ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
-            
-            
-            #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
-        except:
-            #error log record to MyJournal file
-            progressTracking("TransmitDBMS2_NATIVE EXCEPTION:\n"+"-"+MySourceString)
-            progressJournal("TransmitDBMS2_Native EXCEPTION:\n"+"MySourceString="+ MySourceString )
+        
+        
+        #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
+    except:
+        #error log record to MyJournal file
+        progressTracking("#########   TransmitDBMS2_NATIVE EXCEPTION:\n"+"#######"+MySourceString)
+        progressJournal(" #########TransmitDBMS2_Native EXCEPTION:\n"+"######"+"MySourceString="+ MySourceString )
            
     return
     # ======================================
