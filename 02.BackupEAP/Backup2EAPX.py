@@ -13,6 +13,9 @@
 # Name: Backup EA model into EAPX files
 # Description: Automate routine backups from client side into EAPX files, Native Format, other DBMS repository
 # Inputs:  Configuration file= 
+# TODO
+    #- Rough Statistics - How much sourcess in Logfile, How Much to be skipped, Reult-How much nackupd successufully, How much Skipped, How Much errors
+    #- E-mail notification
 # Date: 20201201
 # change log
 
@@ -72,7 +75,7 @@ MyDestinationString = ""  #Sparx scope- Connection string to Destination
 MyLogFile =  ""           #Sparx scope- Name of Logfile  <DestinationName>_<YYYYMMDD-HHMM>.EAPX
                             # destination name is derived from MySourceString <Location><ModelID-xxx><shortName> e.g.QNAP-011_ea_astro_chrono_graph 
 MyLogFilePostfix = "_LogFile"   # Name of Logfile <DestinationName><MyLogFilePostFix>_<YYYYMMDD-HHMM>_.TXT
-MyJournal =  ""           #Backup Scope - Name of Journal file: <DestinationName><MyJournal><MyJournalPostfix>_<YYYYMMDD-HHMM>.TXT
+MyJournal =  ""           #Backup Scope - Name of Journal file: <DestinationName>\<YYYY>\<MyJournals><MyJournalPostfix>_<YYYYMMDD-HHMM>.TXT
 MyJournalPostfix = "_Journal" #
 MyOutputFormat=[] #list of formats
 # Developing Variables
@@ -175,7 +178,7 @@ def readConfigFile():
             MyDestinationFolderRoot=doc["DestinationFolderRoot"]
             MyDestinationFolderEAPX=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'EAPX'
             MyDestinationFolderNATIVE=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'NATIVE'
-            MyJournalFileFolder=doc["MyJournalFile"]+"\\"+time.strftime('%Y')
+            MyJournalFileFolder=doc["MyJournalFile"]+"\\"+time.strftime('%Y')+"\\"+"Journals"
             MyJournalFile=MyJournalFileFolder+"\\"+time.strftime('%Y%m%d')+"_"+"Backup_LogFile"+".txt"
             ExistDestinationDir(MyJournalFileFolder)
         elif (item=='Destination Type'):
@@ -264,7 +267,7 @@ def closeApp(eaApp):
         MyRepository.Exit()
     else:
         a=1
-
+    progressTracking("===========================================Backup Ended")
     progressJournal("=============================================Backup Ended")
     return 
 # ======================================

@@ -7,7 +7,7 @@
 
 Destinations:
     DestinationFolderRoot: "M:\\77.Backup"
-    MyJournalFile: "M:\\77.Backup\\Journals"
+    MyJournalFile: "M:\\77.Backup"
 
 # Destination type
 #EAPX, DBMS, Native
