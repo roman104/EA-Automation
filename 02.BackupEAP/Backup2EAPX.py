@@ -16,7 +16,10 @@
 # Date: 20201201
 # change log
 
-# LAst Change: 20210122
+# LAst Change: 
+# 20210127:
+#   - added tracking and journals missing code
+# 20210122
 #   journal, progress tracking tuning
 # # change: 20210107
 # Descrition of last change
@@ -379,7 +382,9 @@ def exportAllSources2NativeXML( ):
             #if(Version=='Demo'):print ('Skipped=',OneSource.split('---')[0])
             progressTracking("Skipped="+RepositoryID)
             progressJournal("Skipped="+RepositoryID)
-
+        
+        progressTracking("TransmitDBMS2_NATIVE_XML:\n"+"-"+RepositoryID+"exported successfuly")
+        progressJournal("TransmitDBMS2_NATIVE_XML :\n"+ RepositoryID+"exported successfuly")
     return True
 # ======================================
 # Template function
@@ -395,8 +400,13 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
     
     MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
     ExistDestinationDir(MyDestinationFolderXMLNATIVE)
-    progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-    progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+    progressTracking("TransmitDBMS2_NATIVE_XML starts:\n"+"-"+RepositoryID+"\n"+MySourceString+"\n"+ MyDestinationString+"\n"+ MyLogFile+"\n"+ MyJournal)
+    progressJournal("TransmitDBMS2_NATIVE_XML starts:\n"+"MySourceString="+ MySourceString +"\n" \
+                    +"MyDestinationString="+MyDestinationString+"\n" \
+                    +"MyLogFile="+ MyLogFile+"\n" \
+                    + "MyJournal="+MyJournal)
+    #progressTracking("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+    #progressJournal("TransmitDBMS2XMLNative:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     if(Version=='Demo'):
        A=0
         
@@ -416,10 +426,15 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
             #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
         except:
             #error log record to MyJournal file
-            progressTracking("TransmitDBMS2NATIVE EXCEPTION:\n"+"-"+MySourceString)
-    
+            progressTracking("TransmitDBMS2_NATIVE EXCEPTION:\n"+"-"+MySourceString)
+            progressJournal("TransmitDBMS2_Native EXCEPTION:\n"+"MySourceString="+ MySourceString )
+           
     return
     # ======================================
+ 
+            
+            
+        
 
 #-------------------------------------------------------------
 # Template function
