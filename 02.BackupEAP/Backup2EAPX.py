@@ -56,6 +56,7 @@ from string import Template
     #Main Configuration file
         #todo = how to make relative path to the config
 MyConfigFile="A:\\26.PrehladModelov\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
+#MyConfigFile="A:\\26.PrehladModelov\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig.yml" 
 
 #MyConfigFile='r.\BackupConfig.yml' 
 MyConfigRepo=None
@@ -80,8 +81,10 @@ MyJournalPostfix = "_Journal" #
 MyOutputFormat=[] #list of formats
 # Developing Variables
 #Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
-            # all EA components calls are skipped for better debugging
+            # all EA components calls are skipped for better debuggingVersion = 'Release'
 Version = 'Release'
+Success=True  # Global variable for recognition return from methods from EA library
+           # it is not clear for me now what measn return values, if it has any meaning
 MY_ADDRESS = 'webadmin@agnicoli.org'
 PASSWORD = '123456'
 # Tracking, debugging
@@ -93,7 +96,7 @@ PASSWORD = '123456'
 TrackingLevel = 0  
 MyJournalFileFolder=""    # Finame to journal file - logfile for the whole process of backup
 MyJournalFile =""
-DestinationConnectionString="EAConnectString:QNAP-011_BAK --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_BAK;LazyLoad=1;"
+#DestinationConnectionString="EAConnectString:QNAP-011_BAK --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_BAK;LazyLoad=1;"
 # ============================
 #-------------------------------------------------------------
 # 
@@ -147,6 +150,7 @@ def readConfigFile():
     global MyDestinationFolderNATIVE
     global MyJournalFileFolder
     global MyJournalFile
+    global Version
     progressTracking("Read Config")
     MyConfigRepo = read_yaml(MyConfigFile)
      # read the config yaml
@@ -242,10 +246,10 @@ def performActions(MyAction=""):
     cmd="Backup2EAPX"
     cmd=MyAction
     if (cmd == "Backup2EAPX"):
-        exportAllSources2EAPX()
+        exportAllSources_2_EAPX()
         
     elif (cmd == "Backup2XML"):
-        exportAllSources2NativeXML()
+        exportAllSources_2_Native_XML()
                
     else:
         return -1
@@ -291,19 +295,21 @@ def read_yaml(ConfigFile):
 # name:
 # Date:
 # Purpose: just copy and pASTE if you need new function
-def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
+def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
     global MyProject
     global aeApp
     global RepositoryID
-    progressTracking("TransmitDBMS2EAPX starts:\n\t"+"-----------------------------------"+RepositoryID+"\n\t" \
+    global Success
+    ret=Success # for Demo purpose
+    progressTracking("TransmitDBMS_2_EAPX starts:\t"+"-----------------------------------"+RepositoryID+ "----->START"+"\n\t" \
                      +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
-    progressJournal("TransmitDBMS2EAPX starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
+    progressJournal("TransmitDBMS_2_EAPX starts:\t"+"-----------------------------------"+RepositoryID+ "----->START"+"\n\t"+"MySourceString"+MySourceString +"\n\t" \
                     +"MyDestinationString="+MyDestinationString+"\n\t" \
                     +"MyLogFile="+ MyLogFile+"\n\t" \
                     + "MyJournal="+MyJournal)
-    if(Version == 'Release'):
-    #     print("TransmitDBMS2EAPX starts:\n"+"MySourceString=" + MySourceString + "\n"
+    
+    #     print("TransmitDBMS_2_EAPX starts:\n"+"MySourceString=" + MySourceString + "\n"
     #           + "MyDestinationString="+MyDestinationString+"\n"
     #           + "MyLogFile=" + MyLogFile+"\n"
     #           + "MyJournal="+MyJournal)
@@ -311,23 +317,29 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
         
     
         
-        try:
+    try:
             
             #REM Transfer Project based on connection string to target file (maybe another connection string)
         #    MyRepository = eaApp.Repository
             #Repository.Windows()
         #    Project = MyRepository.GetProjectInterface()
-            ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
+            if(Version == 'Release'):
+                ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
             
             #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
-        except:
+    except:
             #error log record to MyJournal file
-            progressJournal("TransmitDBMS2EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
-            progressTracking("TransmitDBMS2EAPX EXCEPTION:\n"+"-"+MySourceString)
+            progressJournal("TransmitDBMS_2_EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
+            progressTracking("TransmitDBMS_2_EAPX EXCEPTION:\n"+"-"+MySourceString)
             
-        #progressTracking("TransmitDBMS2EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
-        progressTracking("TransmitDBMS2EAPX:\n"+"-"+RepositoryID+":"+"exported successfuly")
-        progressJournal("TransmitDBMS2EAPX :\n"+ RepositoryID+":"+"exported successfuly")
+    #progressTracking("TransmitDBMS_2_EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
+    if(ret==Success):
+        progressTracking("TransmitDBMS_2_EAPX:\t"+"-"+RepositoryID+":"+"exported successfuly")
+        progressJournal("TransmitDBMS_2_EAPX :\t"+ RepositoryID+":"+"exported successfuly")
+    else:
+        progressTracking("TransmitDBMS_2_EAPX:\t"+"-"+RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
+        progressJournal("TransmitDBMS_2_EAPX :\t"+ RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
+
     return
     # ======================================
     #-------------------------------------------------------------
@@ -337,25 +349,18 @@ def transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal 
 # name:
 # Date:
 # Purpose:exportAllSources2NativeXML
-def exportAllSources2EAPX ( ):
+def exportAllSources_2_EAPX ( ):
     global RepositoryID
     for OneRepo in MyRepositoryList[0]:
     
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
-        if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
+        if (MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
-            if(True ):
-                # To file
-                MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
-                transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
-            else:
-                #To DBMS- TODO - Why this doesn't work? Not Implemented by Sparx?
-                MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
-                MyDestinationString=DestinationConnectionString
-                transmitDBMS2EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
-                True
+            MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
+            TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+            
         else:
             
             progressTracking(" _______________________  Skipped="+RepositoryID)
@@ -367,7 +372,7 @@ def exportAllSources2EAPX ( ):
 # name:
 # Date: 20210120
 # Purpose:
-def exportAllSources2NativeXML( ):
+def exportAllSources_2_Native_XML( ):
     global DestinationFolderWithDate
     global RepositoryID
     for OneRepo in MyRepositoryList[0]:
@@ -381,32 +386,34 @@ def exportAllSources2NativeXML( ):
             
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForNATIVE(OneSource)
             
-            transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+            ret= transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJournal)
         else:
             
             progressTracking(" _________________________ Skipped="+RepositoryID)
             progressJournal(" ___________________________Skipped="+RepositoryID)
         
-        progressTracking(" ++++++++++++++++++++++++++  TransmitDBMS2_NATIVE_XML:"+"-"+RepositoryID+":"+"exported successfuly")
-        progressJournal(" +++++++++++++++++++++++++++ TransmitDBMS2_NATIVE_XML :"+ RepositoryID+":"+"exported successfuly")
+        #progressTracking(" ++++++++++++++++++++++++++  TransmitDBMS2_NATIVE_XML:"+"-"+RepositoryID+":"+"exported successfuly")
+        #progressJournal(" +++++++++++++++++++++++++++ TransmitDBMS2_NATIVE_XML :"+ RepositoryID+":"+"exported successfuly")
     return True
 # ======================================
 # Template function
 # name:
 # Date:
 # Purpose: just copy and pASTE if you need new function
-def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
+def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
     global MyProject
     global aeApp
     global MyDestinationFolderNATIVE
     global RepositoryID
-    
-    MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
+    global Success
+    ret=0
+    #MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
+    MyDestinationFolderXMLNATIVE=MyDestinationString
     ExistDestinationDir(MyDestinationFolderXMLNATIVE)
-    progressTracking("  >>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\n\t"+"------------------------------------"+RepositoryID+"\n\t" \
+    progressTracking("  >>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\t"+"------------------------------------"+RepositoryID+ "----->START"+"\n\t" \
                     +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
-    progressJournal(">>>>>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\n\t"+"MySourceString="+ MySourceString +"\n\t" \
+    progressJournal(">>>>>>>>>>>>>>>>>>>>>>>>TransmitDBMS2_NATIVE_XML starts:\t"+"------------------------------------"+RepositoryID+ "----->START"+"MySourceString="+ MySourceString +"\n\t" \
                     +"MyDestinationString="+MyDestinationString+"\n\t" \
                     +"MyLogFile="+ MyLogFile+"\n\t" \
                     + "MyJournal="+MyJournal)
@@ -424,12 +431,19 @@ def transmitDBMS2Native(MySourceString, MyDestinationString, MyLogFile, MyJourna
         if(Version=='Release'):
             ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
         
-        
         #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
     except:
         #error log record to MyJournal file
         progressTracking("#########   TransmitDBMS2_NATIVE EXCEPTION:\n"+"#######"+MySourceString)
-        progressJournal(" #########TransmitDBMS2_Native EXCEPTION:\n"+"######"+"MySourceString="+ MySourceString )
+        progressJournal(" #########   TransmitDBMS2_Native EXCEPTION:\n"+"######"+"MySourceString="+ MySourceString )
+
+    if(ret==Success):
+        progressTracking("TransmitDBMS2_NATIVE_XML:\t"+"-"+RepositoryID+":"+"exported successfuly")
+        progressJournal("TransmitDBMS2_NATIVE_XML :\t"+ RepositoryID+":"+"exported successfuly")
+    else:
+        progressTracking("TransmitDBMS2_NATIVE_XML:\y"+"-"+RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
+        progressJournal("TransmitDBMS2_NATIVE_XML :\t"+ RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
+
            
     return
     # ======================================
@@ -464,7 +478,7 @@ def prepareParametersForEAPX(MyOneSource):
     ExistDestinationDir(MyDestinationFolderEAPX)
     DestinationFolderWithDate=MyDestinationFolderEAPX + "\\" + time.strftime('%Y%m%d')
     ExistDestinationDir(DestinationFolderWithDate)
-    MyDestinationString=DestinationFolderWithDate + '\\' + ModelName + '_' + time.strftime('%Y%m%d-%H%M') + '.eapx'
+    MyDestinationString=DestinationFolderWithDate + '\\' + ModelName + '_' + time.strftime('%Y%m%d-%H%M')  + '.eapx'
     MyLogFile=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyLogFilePostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'
     MyJournal=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyJournalPostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'
     #returns   MySourceString, MyDestinationString, MyLogFile, MyJournal
@@ -495,11 +509,11 @@ def prepareParametersForNATIVE(MyOneSource):
     MyConnectionString=b[1].strip()
     
     ExistDestinationDir(MyDestinationFolderNATIVE)
-    DestinationFolderWithDate=MyDestinationFolderNATIVE + "\\" + time.strftime('%Y%m%d')+'\\'+RepositoryID
+    DestinationFolderWithDate=MyDestinationFolderNATIVE + "\\" + time.strftime('%Y%m%d')+"\\"+time.strftime('%Y%m%d-%H%M')+'--'+RepositoryID
     ExistDestinationDir(DestinationFolderWithDate)
     ExistDestinationDir(MyDestinationFolderNATIVE)
     
-    MyDestinationString=DestinationFolderWithDate + '\\' + ModelName + '_' + time.strftime('%Y%m%d-%H%M') + '.eapx'
+    MyDestinationString=DestinationFolderWithDate 
     MyLogFile=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyLogFilePostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'
     MyJournal=          DestinationFolderWithDate + '\\' + ModelName + '_' + MyJournalPostfix + '_' + time.strftime('%Y%m%d-%H%M') + '.txt'
     #returns   MySourceString, MyDestinationString, MyLogFile, MyJournal
@@ -528,7 +542,8 @@ def sendEmail (Message ):
     progressTracking("Send E-mails")
     sender = 'roman.kazicka@systemThinking.sk'
     receiver = ['roman.kazicka@systemThinking.sk']
-
+    Mail_Subject=""
+    Mail_message=""
     message = """From: From Person <roman.kazicka@systemThinking.sk>
     To: To person <roman.kazicka@systemThinking.sk>
     Subject: """+Mail_Subject
@@ -616,7 +631,7 @@ def myMain():
     readCmds()
     performActions("Backup2EAPX")
 
-    performActions("Backup2XML")
+    #performActions("Backup2XML")
     notification()
     closeApp(eaApp)
     return 

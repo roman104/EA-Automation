@@ -6,20 +6,24 @@
 #Source repositories
 Sources:
     1:
+        SourceID: "QNAP-000_ea_hp_ci"
         ToBeBackuped: No
-        Description: "astro chrono graph"
-        ConnectionString: "EAConnectString:QNAP-011_ea_astro_chrono_graph --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_ea_astro_chrono_graph;LazyLoad=1;"
-    2:
-        ToBeBackuped: Yes
-        Description: "HP repo"
+        Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
         ConnectionString: "EAConnectString:QNAP-000_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-000_ea_hp_ci;LazyLoad=1;"
-#Destination repositories
+    2:
+        SourceID: "QNAP-001_Agnicoli"
+        ToBeBackuped: Yes
+        Description: "Agnicoli repository"
+        ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
+
 Destinations:
     DestinationFolderRoot: "M:\\77.Backup"
+    MyJournalFile: "M:\\77.Backup"
 
 # Destination type
+#EAPX, DBMS, Native
 Destination Type:
     - EAPX
     - DBMS
     - NATIVE
-# EAPX, DBMS, Native
+#

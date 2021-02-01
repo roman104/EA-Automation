@@ -47,9 +47,19 @@ Sources:
     6:
         SourceID:  "QNAP-017_AgnicoliCloudServices"
         ToBeBackuped: Yes
-        Description: "Cloud Services - Sparx Cloud Servver"
+        Description: "Cloud Services - Sparx Cloud Server"
         ConnectionString: "EAConnectString:QNAP-017_AgnicoliCloudServices --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-017_AgnicoliCloudServices;LazyLoad=1;"
     7:
+        SourceID:  "FIIT_023_STHDF_2020_2021"
+        ToBeBackuped: Yes
+        Description: "ODBC = "
+        ConnectionString: "EAConnectString:FIIT_023-STHDF_2020_2021 --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=FIIT_023-STHDF_2020_2021;LazyLoad=1;"
+    8:
+        SourceID: "DC01-CLOUD-023_STHDF_2020_2021"
+        ToBeBackuped: No
+        Description: "DC01=CLOUD=NOT SUPPORTED "
+        ConnectionString: "EAConnectString:DC01-CLOUD-023_STHDF_2020_2021 --- ;Connect=Cloud=protocol:http,address:213.81.205.205,port:804;Data Source=023_STHDF_2020_2021;DSN=023_STHDF_2020_2021;"
+    9:
         SourceID: "LAST ITEM"
         ToBeBackuped: No
         Description: ""
