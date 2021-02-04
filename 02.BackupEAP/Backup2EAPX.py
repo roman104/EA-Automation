@@ -20,6 +20,10 @@
 # change log
 
 # LAst Change: 
+#20210204-
+# Issues:
+#   1 - EAPX > 2GB
+#   2 - NATIVE - onlu for ODBC  
 # 20210127:
 #   - added tracking and journals missing code
 # 20210122
@@ -39,6 +43,8 @@ import sys
 import traceback
 import subprocess #to be able to start sparx
 import smtplib
+from timeit import default_timer as timer
+
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from string import Template
@@ -80,9 +86,9 @@ MyJournal =  ""           #Backup Scope - Name of Journal file: <DestinationName
 MyJournalPostfix = "_Journal" #
 MyOutputFormat=[] #list of formats
 # Developing Variables
-#Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
+Version = 'Demo' # Release, # this variable stands for controling the flow during development and release.
             # all EA components calls are skipped for better debuggingVersion = 'Release'
-Version = 'Release'
+#Version = 'Release'
 Success=True  # Global variable for recognition return from methods from EA library
            # it is not clear for me now what measn return values, if it has any meaning
 MY_ADDRESS = 'webadmin@agnicoli.org'
@@ -351,20 +357,37 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
 # Purpose:exportAllSources2NativeXML
 def exportAllSources_2_EAPX ( ):
     global RepositoryID
+    startTimeAll=timer()# =time.strftime('%Y%m%d%H%M,%S')
+    endTimeAll= timer()
+    startTime=timer()
+    endTime=timer()   
+    duration= endTime-startTime
+    durationAll=timer()
     for OneRepo in MyRepositoryList[0]:
-    
+        progressTracking(" _________________________ XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        progressJournal(" ___________________________XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<")
+          
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
-        if (MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
+        if (MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True and "EAPX" in MyRepositoryList[0][OneRepo]["Actions"]):
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForEAPX(OneSource)
             TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal)
-            
+            endTime= timer()  
+            duration=endTime-startTime
+            progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
+            progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
+          
         else:
             
             progressTracking(" _______________________  Skipped="+RepositoryID)
             progressJournal("  _______________________  Skipped="+RepositoryID)
+        
+    endTimeAll=timer()
+    durationAll=endTimeAll-startTimeAll    
+    progressTracking(" \t\tDuration All EAPX="+elapsedTime(startTimeAll,endTimeAll, durationAll))
+    progressJournal(" \t\tDuration All EAPX ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -375,8 +398,16 @@ def exportAllSources_2_EAPX ( ):
 def exportAllSources_2_Native_XML( ):
     global DestinationFolderWithDate
     global RepositoryID
+    startTimeAll=timer()# =time.strftime('%Y%m%d%H%M,%S')
+    endTimeAll= timer()
+    startTime=timer()
+    endTime=timer()   
+    duration= endTime-startTime
+    durationAll=timer()
     for OneRepo in MyRepositoryList[0]:
-    
+        progressTracking(" _________________________ XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        progressJournal(" ___________________________XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<")
+          
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
@@ -387,13 +418,22 @@ def exportAllSources_2_Native_XML( ):
             MySourceString, MyDestinationString, MyLogFile, MyJournal=prepareParametersForNATIVE(OneSource)
             
             ret= transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJournal)
+
+            endTime= timer()  
+            duration=endTime-startTime
+            progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
+            progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
+
         else:
             
             progressTracking(" _________________________ Skipped="+RepositoryID)
             progressJournal(" ___________________________Skipped="+RepositoryID)
         
-        #progressTracking(" ++++++++++++++++++++++++++  TransmitDBMS2_NATIVE_XML:"+"-"+RepositoryID+":"+"exported successfuly")
-        #progressJournal(" +++++++++++++++++++++++++++ TransmitDBMS2_NATIVE_XML :"+ RepositoryID+":"+"exported successfuly")
+    endTimeAll=timer()
+    durationAll=endTimeAll-startTimeAll    
+    progressTracking(" \t\tDuration All EAPX="+elapsedTime(startTimeAll,endTimeAll, durationAll))
+    progressJournal(" \t\tDuration All EAPX ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
+
     return True
 # ======================================
 # Template function
@@ -611,6 +651,17 @@ def progressJournal ( msg):
     return True
 # ======================================
 #-------------------------------------------------------------
+# name: Time Duration 
+# Date:20210204
+# Purpose: return time duration in HH:MM:SS
+def elapsedTime (myStartTime, myEndTime, myDuration ):
+    float_time = 0.6  # in minutes
+    hours, seconds = divmod(myDuration , 3600)  # split to hours and seconds
+    minutes, seconds = divmod(seconds, 60)  # split the seconds to minutes and seconds
+    duration = "{:02.0f}:{:02.0f}:{:02.0f}".format(hours, minutes, seconds)
+    return duration
+# ======================================
+#-------------------------------------------------------------
 # Template function
 # name:
 # Date:
@@ -631,7 +682,7 @@ def myMain():
     readCmds()
     performActions("Backup2EAPX")
 
-    #performActions("Backup2XML")
+    performActions("Backup2XML")
     notification()
     closeApp(eaApp)
     return 
