@@ -6,10 +6,10 @@
 #Source repositories
 Sources:
     1:
-        SourceID: "QNAP-000_ea_hp_ci"
+        SourceID: "QNAP-hp_001_ea_hp_ci"
         ToBeBackuped: No
         Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
-        ConnectionString: "EAConnectString:QNAP-000_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-000_ea_hp_ci;LazyLoad=1;"
+        ConnectionString: "EAConnectString:QNAP-hp_001_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-hp_001_ea_hp_ci;LazyLoad=1;"
     2:
         SourceID: "QNAP-001_Agnicoli"
         ToBeBackuped: Yes
