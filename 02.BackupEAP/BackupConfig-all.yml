@@ -82,7 +82,7 @@ Sources:
         ConnectionString: "EAConnectString:QNAP-017_AgnicoliCloudServices --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-017_AgnicoliCloudServices;LazyLoad=1;"
     7:
         SourceID:  "FIIT_023_STHDF_2020_2021"
-        ToBeBackuped: Yes
+        ToBeBackuped: No
         Actions: 
             - NATIVE
             - EAPX

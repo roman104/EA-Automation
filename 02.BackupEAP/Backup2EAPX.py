@@ -136,7 +136,7 @@ def initBackup():
       #REM Transfer Project based on connection string to target file (maybe another connection string)
         MyRepository = eaApp.Repository
             #Repository.Windows()
-       # MyProject = MyRepository.GetProjectInterface()
+        MyProject = MyRepository.GetProjectInterface()
             #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
     else:
        True
@@ -281,7 +281,11 @@ def closeApp(eaApp):
     #eaApp.Close()
     # eaApp.Quit()
     if(Version == 'Release'):
-        MyRepository.Exit()
+        try:
+            MyRepository.Exit()
+        except:
+            False
+
     else:
         a=1
     progressTracking("===========================================Backup Ended")
@@ -315,7 +319,9 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
     global RepositoryID
     global Success
     SizeOfFile=-1
-    ret=Success # for Demo purpose
+    ret=False # for Demo purpose
+    ret1=ret2=ret3=ret4=False
+
     progressTracking("TransmitDBMS_2_EAPX starts:\t"+"-----------------------------------"+RepositoryID+ "----->START"+"\n\t" \
                      +MySourceString+"\n\t"+ MyDestinationString+"\n\t"+ MyLogFile+"\n\t"+ MyJournal)
     progressJournal("TransmitDBMS_2_EAPX starts:\t"+"-----------------------------------"+RepositoryID+ "----->START"+"\n\t"+"MySourceString"+MySourceString +"\n\t" \
@@ -336,12 +342,13 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
             #REM Transfer Project based on connection string to target file (maybe another connection string)
         #    MyRepository = eaApp.Repository
             #Repository.Windows()
-        #    Project = MyRepository.GetProjectInterface()
+        #    
             if(Version == 'Release'):
-                ret1=MyRepository.OpenFile(MySourceString)
-                ret2=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
-                ret3=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
-                ret4=Myproject.CloseFile()
+                #ret1=MyRepository.OpenFile(MySourceString)
+                Project = MyRepository.GetProjectInterface()
+                #ret2=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
+                ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
+                #ret4=Myproject.CloseFile()
             else:
                 time.sleep(1)   
                 #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
@@ -352,6 +359,8 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
             #error log record to MyJournal file
             progressJournal("TransmitDBMS_2_EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
             progressTracking("TransmitDBMS_2_EAPX EXCEPTION:\n"+"-"+MySourceString)
+            closeApp(eaApp) # close EA
+            ret=False
     SizeOfFile=getFileSize(MyDestinationString)       
     #progressTracking("TransmitDBMS_2_EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
     if(ret==Success):
@@ -361,7 +370,7 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
         progressTracking("TransmitDBMS_2_EAPX:\t"+"-"+RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
         progressJournal("TransmitDBMS_2_EAPX :\t"+ RepositoryID+":"+"!!!!!!ERROR During EXPORT!!!!!")
 
-    return ret1 & ret2 & ret3 & ret4, SizeOfFile
+    return ret, SizeOfFile
     # ======================================
     #-------------------------------------------------------------
 
@@ -380,8 +389,8 @@ def exportAllSources_2_EAPX ( ):
     durationAll=timer()
     for OneRepo in MyRepositoryList[0]:
         startTime=timer()
-        progressTracking(" _________________________ XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
-        progressJournal(" ___________________________XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<")
+        progressTracking(" _________________________ EAPX ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
+        progressJournal(" ___________________________ EAPX ITEM ="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<")
           
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
@@ -394,7 +403,7 @@ def exportAllSources_2_EAPX ( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration, ret, "EAPX")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,Size, ret, "EAPX")
           
         else:
             
@@ -405,7 +414,7 @@ def exportAllSources_2_EAPX ( ):
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All EAPX="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All EAPX ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll, endTimeAll,durationAll, Success, Size,"EAPX SUMMARY")
+    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll, endTimeAll,durationAll, Size, Success, "EAPX SUMMARY")
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -442,7 +451,7 @@ def exportAllSources_2_Native_XML( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration, ret,Size, "NATIVE_XML")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,Size, ret, "NATIVE_XML")
         else:
             
             progressTracking(" _________________________ Skipped="+RepositoryID)
@@ -452,7 +461,7 @@ def exportAllSources_2_Native_XML( ):
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All NATIVE="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All NATIVE ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll,endTimeAll,durationAll, Success, Size, "EAPX SUMMARY")
+    statisticsCollectData ( ">\tAll Items Summary= ", "SUM",startTimeAll,endTimeAll,durationAll, Size, Success, "EAPX SUMMARY")
     return True
 # ======================================
 #  function
@@ -468,6 +477,7 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
     global Success
     SizeOfFolder=-1
     ret=False
+    ret1=ret2=ret4=ret4=False
     #MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
     MyDestinationFolderXMLNATIVE=MyDestinationString
     ExistDestinationDir(MyDestinationFolderXMLNATIVE)
@@ -490,6 +500,7 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
         #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
         if(Version=='Release'):
             ret1=MyRepository.OpenFile(MySourceString)
+            Project = MyRepository.GetProjectInterface()
             ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
             ret2=Myproject.CloseFile()
                
@@ -503,7 +514,7 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
         #error log record to MyJournal file
         progressTracking("#########   TransmitDBMS2_NATIVE EXCEPTION:\n"+"#######"+MySourceString)
         progressJournal(" #########   TransmitDBMS2_Native EXCEPTION:\n"+"######"+"MySourceString="+ MySourceString )
-    
+        #closeApp(eaApp) # close EA
     SizeOfFolder=getFolderSize(MyDestinationFolderXMLNATIVE)
     
     if(ret==Success):
@@ -772,7 +783,7 @@ def myMain():
     initBackup()
     
     readCmds()
-   # performActions("Backup2EAPX")
+    #performActions("Backup2EAPX")
 
     performActions("Backup2XML")
     notification()
