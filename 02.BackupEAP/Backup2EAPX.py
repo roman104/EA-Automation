@@ -20,6 +20,8 @@
 # change log
 
 # LAst Change: 
+#20210210- bug fixing testing
+#       - statistics sumamry implemetation
 #20210207- Issues:
     #- Export to NATIve - Duration is 0
     # improvemets :
@@ -109,6 +111,32 @@ PASSWORD = '123456'
 TrackingLevel = 0  
 MyJournalFileFolder=""    # Finame to journal file - logfile for the whole process of backup
 MyJournalFile =""
+#Statistics --------------------------------------------------------------------------
+#Dictionary withh summary results
+#Statistics structure of dictionary
+# <HEADER>
+# <Date> <Time>
+# Backup Report : <Name of Report>
+# Data Sources: 
+# <Number of ALL Items in Report>
+# <Number of EAPX items in config> 
+# <Number of NATIVE XML items in config>
+# <Number ox EAPX to be backuped>
+# <Number of NAtive XML to be backuped>
+
+# Results of backups: 
+#  <ALL BAckups succeeded>
+#  <All FAILED Backups>
+#   EAPX <All Items to be backuped>
+#   <Number Of OK>
+#   <Number of FAILED>
+#   NAtive XML <All Items to be backuped>
+#   <Number of OK>
+#   <Number for FAILED>
+#   Time information: <Start date, Time>, <End Date, Time>, <Duration>, <Total size in MB>
+# Details about all Items:
+# <item ID><Repo ID><Format><Start time><End Time><duration><Size><Result><comment>
+#
 #DestinationConnectionString="EAConnectString:QNAP-011_BAK --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_BAK;LazyLoad=1;"
 # ============================
 #-------------------------------------------------------------
@@ -116,7 +144,7 @@ MyJournalFile =""
 # name:
 # Date:
 # Purpose: read command to be performed - optional
-
+# Statistics
 # Init variables, paths to config file
 def initBackup():
     global eaApp
