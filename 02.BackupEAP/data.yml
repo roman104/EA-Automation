@@ -1,0 +1,37 @@
+Details about all Items:
+  item ID:
+    Comment: ''
+    Duration: 1.1
+    End Time: ''
+    Format: EAPX
+    Repo ID: REPO
+    Result: OK
+    Size: 1.2
+    Start time: ''
+    id: 2
+EAPX:
+  All Items to be backuped: 1
+  Number of FAILED: 1
+  Number of OK: 1
+Header:
+  Date: YYYYMMDD,MMHH
+  Report Name: Report - Backup Summary
+List Of Data:
+  All EAPX Items to be Backuped: 2
+  All Items In Config: 10
+  All Items To be backed up: 2
+  All XML Items to be Backeuped: 2
+NAtive XML:
+  All Items to be backuped: 1
+  Number for FAILED: 1
+  Number of OK: 1
+Results:
+  All Items Overview:
+    ALL BAckups succeeded: 1
+    All FAILED Backups: 1
+    All Items: 1
+Time information:
+  Duration: 1.5
+  End Date, Time: ''
+  Start date Time: ''
+  Total size in MB: 10
