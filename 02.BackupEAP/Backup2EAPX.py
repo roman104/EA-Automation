@@ -20,6 +20,9 @@
 # change log
 
 # LAst Change: 
+#20210215- Bug fixing - 3 type of input strings EAPX, ODBC, CLOUD to be distinguished in preparatioFunctions
+#Constrains:
+# TODO add constrains to comment
 #20210210- bug fixing testing
 #       - statistics sumamry implemetation
 #20210207- Issues:
@@ -67,7 +70,8 @@ from string import Template
 # definition of global variables
     #Main Configuration file
         #todo = how to make relative path to the config
-MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
+##MyConfigFile="M:\\03.Automations\\01.Backups-Clients\\BackupConfig-All-01.yml" 
+MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All-01.yml" 
 
 
 #MyConfigFile='r.\BackupConfig.yml' 
@@ -162,9 +166,9 @@ def initBackup():
     if(Version=='Release'):
         eaApp = win32com.client.Dispatch("EA.App") #call EA application
       #REM Transfer Project based on connection string to target file (maybe another connection string)
-        MyRepository = eaApp.Repository
+        #MyRepository = eaApp.Repository
             #Repository.Windows()
-        MyProject = MyRepository.GetProjectInterface()
+        #MyProject = MyRepository.GetProjectInterface()
             #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
     else:
        True
@@ -373,21 +377,21 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
         #    
             if(Version == 'Release'):
                 #ret1=MyRepository.OpenFile(MySourceString)
+                MyRepository = eaApp.Repository
                 Project = MyRepository.GetProjectInterface()
-                #ret2=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
+                          
                 ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
                 #ret4=Myproject.CloseFile()
             else:
                 time.sleep(1)   
-                #TODO JOURNAL shoud contain time measurements, and info for user about progress of backup
-                #TODO get size of file
+               
             
            
     except:
             #error log record to MyJournal file
             progressJournal("TransmitDBMS_2_EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
             progressTracking("TransmitDBMS_2_EAPX EXCEPTION:\n"+"-"+MySourceString)
-            closeApp(eaApp) # close EA
+            #closeApp(eaApp) # close EA
             ret=False
     SizeOfFile=getFileSize(MyDestinationString)       
     #progressTracking("TransmitDBMS_2_EAPX:\n"+"-"+MySourceString+"-"+MyDestinationString+"-"+ MyLogFile+"-"+ MyJournal)
@@ -415,6 +419,8 @@ def exportAllSources_2_EAPX ( ):
     endTime=timer()   
     duration= endTime-startTime
     durationAll=timer()
+    Size=-1 
+    ret=-1 #SKIPPED
     for OneRepo in MyRepositoryList[0]:
         startTime=timer()
         progressTracking(" _________________________ EAPX ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
@@ -431,18 +437,20 @@ def exportAllSources_2_EAPX ( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,Size, ret, "EAPX")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
           
         else:
             
             progressTracking(" _______________________  Skipped="+RepositoryID)
             progressJournal("  _______________________  Skipped="+RepositoryID)
-        
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
+
+
     endTimeAll=timer()
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All EAPX="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All EAPX ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll, endTimeAll,durationAll, Size, Success, "EAPX SUMMARY")
+    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll, endTimeAll,durationAll, str(Size), Success, "EAPX SUMMARY")
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -459,6 +467,7 @@ def exportAllSources_2_Native_XML( ):
     endTime=timer()   
     duration= endTime-startTime
     durationAll=timer()
+    ret=-1 # SKIPPED #TODO Status for process to be defined!!! som constant, enum ...
     for OneRepo in MyRepositoryList[0]:
         startTime=timer()
         progressTracking(" _________________________ XML ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
@@ -466,6 +475,7 @@ def exportAllSources_2_Native_XML( ):
           
     #  for  OneSource in MyConnectionsList:
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
+        #TODO =for cloud connection there is wrong parsing
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
         if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
             
@@ -479,9 +489,9 @@ def exportAllSources_2_Native_XML( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,Size, ret, "NATIVE_XML")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
         else:
-            
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
             progressTracking(" _________________________ Skipped="+RepositoryID)
             progressJournal(" ___________________________Skipped="+RepositoryID)
         
@@ -489,7 +499,7 @@ def exportAllSources_2_Native_XML( ):
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All NATIVE="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All NATIVE ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Summary= ", "SUM",startTimeAll,endTimeAll,durationAll, Size, Success, "EAPX SUMMARY")
+    statisticsCollectData ( ">\tAll Items Summary= ", "SUM",startTimeAll,endTimeAll,durationAll, str(Size), Success, "NATIVE XML SUMMARY")
     return True
 # ======================================
 #  function
@@ -504,7 +514,7 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
     global RepositoryID
     global Success
     SizeOfFolder=-1
-    ret=False
+    ret=-1# -1=SKIPPED
     ret1=ret2=ret4=ret4=False
     #MyDestinationFolderXMLNATIVE= MyDestinationFolderNATIVE+"\\" + time.strftime('%Y%m%d')+"\\"+ RepositoryID
     MyDestinationFolderXMLNATIVE=MyDestinationString
@@ -527,8 +537,9 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
     #    Project = MyRepository.GetProjectInterface()
         #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
         if(Version=='Release'):
+            MyRepository = eaApp.Repository
             ret1=MyRepository.OpenFile(MySourceString)
-            Project = MyRepository.GetProjectInterface()
+            MyProject = MyRepository.GetProjectInterface()
             ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
             ret2=Myproject.CloseFile()
                
@@ -577,7 +588,23 @@ def prepareParametersForEAPX(MyOneSource):
     global MyDestinationFolderNATIVE
     global MyJournal
     global DestinationFolderWithDate
-   
+    if("Cloud" in MyOneSource ):
+        # Cloud Connection
+        #"EAConnectString:QNAP-hp_001_ea_hp_ci-M --- ;Connect=Cloud=protocol:http,address:localhost,port:804;Data Source=QNAP-hp_001_ea_hp_ci-M;DSN=QNAP-hp_001_ea_hp_ci-M;"
+
+        a1=MyOneSource.split('---')
+        a2=a1[0].split(":")
+        ModelName=a2[1]
+        MyConnectionString=a1[1]
+        #ModelName=b1=a1[1]
+        #NOT SUPPORTED BY EA!!!!!!
+        True
+    else : 
+        # EAPX, ODBC
+        a=MyOneSource.split(':')
+        b=a[1].split('---')
+        ModelName=b[0]
+        MyConnectionString=b[1]
     a=MyOneSource.split(':')
     b=a[1].split('---')
     ModelName=b[0].strip()
@@ -611,11 +638,30 @@ def prepareParametersForNATIVE(MyOneSource):
     global MyJournal
     global DestinationFolderWithDate
     global RepositoryID
-    a=MyOneSource.split(':')
-    b=a[1].split('---')
-    ModelName=b[0].strip()
-    MyConnectionString=b[1].strip()
-    
+
+    #TODO - 20210214-2200#ERROR for XML NATIVE Connection string has different structure which leads to wrong interpretation of connection string
+    #NATIVE-"EAConnectString:001_PB_CLOUD_EA_MASTER --- ;Connect=Cloud=protocol:http,address:procloud,port:804;Data Source=EA_MASTER;DSN=EA_MASTER;"
+    #EAPX-  "EAConnectString:QNAP-001_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_hp_ci;LazyLoad=1;"
+
+    if("Cloud" in MyOneSource ):
+        # Cloud Connection
+        #"EAConnectString:QNAP-hp_001_ea_hp_ci-M --- ;Connect=Cloud=protocol:http,address:localhost,port:804;Data Source=QNAP-hp_001_ea_hp_ci-M;DSN=QNAP-hp_001_ea_hp_ci-M;"
+
+        a1=MyOneSource.split('---')
+        a2=a1[0].split(":")
+        ModelName=a2[1]
+        MyConnectionString=a1[1]
+        #ModelName=b1=a1[1]
+        True
+    else : 
+        # EAPX, ODBC
+        a=MyOneSource.split(':')
+        b=a[1].split('---')
+        ModelName=b[0]
+        MyConnectionString=b[1]
+
+ 
+        
     ExistDestinationDir(MyDestinationFolderNATIVE)
     DestinationFolderWithDate=MyDestinationFolderNATIVE + "\\" + time.strftime('%Y%m%d')+"\\"+time.strftime('%Y%m%d-%H%M')+'--'+RepositoryID
     ExistDestinationDir(DestinationFolderWithDate)
@@ -770,7 +816,9 @@ def statisticsCollectData ( MyRecordDescription, MyRepoID,MyStartTime, MyEndTime
     global BackupStatistics
     if(MyResult==Success):
         Result="OK"
-    else:
+    elif (MyResult == -1):
+        Result="REPOSITORY SKIPPED"
+    else:    
         Result="ERROR"
     progressTracking(MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
     progressJournal(MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
@@ -811,7 +859,7 @@ def myMain():
     initBackup()
     
     readCmds()
-    #performActions("Backup2EAPX")
+    performActions("Backup2EAPX")
 
     performActions("Backup2XML")
     notification()
