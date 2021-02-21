@@ -20,7 +20,14 @@
 # change log
 
 # LAst Change: 
-#20210215- Bug fixing - 3 type of input strings EAPX, ODBC, CLOUD to be distinguished in preparatioFunctions
+#20210220- tested, fix the issues with  = mix input formats odbc, cloud, output eapx, xml
+#       - added statistics DIctionary, output to separate file (how to make it in one file YAML, list of Dictionary?)
+#       - added variable for gloval statistics
+#       #TODO - not finished fill in the variables
+#       #TODO - save Statistics to YAML
+#20210215- Bug fixing - eapx failed,
+# #DC01-CLOUD-023_STHDF_2020_2021=asks password during open model
+#  type of input strings EAPX, ODBC, CLOUD to be distinguished in preparatioFunctions
 #Constrains:
 # TODO add constrains to comment
 #20210210- bug fixing testing
@@ -71,8 +78,8 @@ from string import Template
     #Main Configuration file
         #todo = how to make relative path to the config
 ##MyConfigFile="M:\\03.Automations\\01.Backups-Clients\\BackupConfig-All-01.yml" 
-MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All-01.yml" 
-
+MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
+#MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All-02.yml"
 
 #MyConfigFile='r.\BackupConfig.yml' 
 MyConfigRepo=None
@@ -115,6 +122,19 @@ PASSWORD = '123456'
 TrackingLevel = 0  
 MyJournalFileFolder=""    # Finame to journal file - logfile for the whole process of backup
 MyJournalFile =""
+#STATISTICS
+MyStatisticsFile=""
+
+InNumOfAllItemsInConfig=0
+InNumOfEAPXinConfig=0
+InNumOfCloudInConfig=00
+OutNumOfEAPXInConfig=0
+OutNumOfNATIVEInConfig=0
+
+OutStartTime=0
+OutEndTime=0
+Duration=0
+
 #Statistics --------------------------------------------------------------------------
 #Dictionary withh summary results
 #Statistics structure of dictionary
@@ -194,6 +214,7 @@ def readConfigFile():
     global MyDestinationFolderEAPX 
     global MyDestinationFolderNATIVE
     global MyJournalFileFolder
+    global MyStatisticsFile
     global MyJournalFile
     global Version
     progressTracking("Read Config")
@@ -229,6 +250,11 @@ def readConfigFile():
             MyDestinationFolderNATIVE=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'NATIVE'
             MyJournalFileFolder=doc["MyJournalFile"]+"\\"+time.strftime('%Y')+"\\"+"Journals"
             MyJournalFile=MyJournalFileFolder+"\\"+time.strftime('%Y%m%d')+"_"+"Backup_LogFile"+".txt"
+            #Statistics in separate file
+            MyStatisticsFile=MyJournalFileFolder+"\\"+time.strftime('%Y%m%d-%H%M')+"_"+"StatisticsFile"+".yaml"
+            #Statistics in common file
+            #MyStatisticsFile=MyJournalFileFolder+"\\"+time.strftime('%Y%m%d')+"_"+"StatisticsFile"+".yaml"
+            
             ExistDestinationDir(MyJournalFileFolder)
         elif (item=='Destination Type'):
             MyOutputFormat=doc
@@ -377,8 +403,9 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
         #    
             if(Version == 'Release'):
                 #ret1=MyRepository.OpenFile(MySourceString)
+                ##Next 2 lines can be performed only one time. TODO shall be moved out of cycle
                 MyRepository = eaApp.Repository
-                Project = MyRepository.GetProjectInterface()
+                MyProject = MyRepository.GetProjectInterface()
                           
                 ret=MyProject.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
                 #ret4=Myproject.CloseFile()
@@ -413,6 +440,8 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
 # Purpose:exportAllSources2NativeXML
 def exportAllSources_2_EAPX ( ):
     global RepositoryID
+    global MyRepository
+    global MyProject
     startTimeAll=timer()# =time.strftime('%Y%m%d%H%M,%S')
     endTimeAll= timer()
     startTime=timer()
@@ -421,6 +450,22 @@ def exportAllSources_2_EAPX ( ):
     durationAll=timer()
     Size=-1 
     ret=-1 #SKIPPED
+    #Init EA for EAPX trnasfer od multiple repositories
+    #TODO RUN THIS CODE BELOW AS A INDEPENDENT THREAD
+    
+    if(Version == 'Release'):
+        try:
+            True
+            #MyRepository = eaApp.Repository
+            #Project = MyRepository.GetProjectInterface()  
+        except:
+            False
+
+    else:
+        True
+
+
+
     for OneRepo in MyRepositoryList[0]:
         startTime=timer()
         progressTracking(" _________________________ EAPX ITEM="+str(OneRepo)+":<<<<<<<<<<<<<<<<<<<<<<<<<<<")
@@ -437,20 +482,20 @@ def exportAllSources_2_EAPX ( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), OneRepo,RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
           
         else:
             
             progressTracking(" _______________________  Skipped="+RepositoryID)
             progressJournal("  _______________________  Skipped="+RepositoryID)
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo), OneRepo,RepositoryID,startTime, endTime,duration,str(Size), ret, "EAPX")
 
 
     endTimeAll=timer()
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All EAPX="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All EAPX ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Sumamry= ", "SUM",startTimeAll, endTimeAll,durationAll, str(Size), Success, "EAPX SUMMARY")
+    statisticsCollectData ( ">\tAll Items Sumamry= ", 9999,"SUM",startTimeAll, endTimeAll,durationAll, str(Size), Success, "EAPX SUMMARY")
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -467,6 +512,7 @@ def exportAllSources_2_Native_XML( ):
     endTime=timer()   
     duration= endTime-startTime
     durationAll=timer()
+    Size=-1
     ret=-1 # SKIPPED #TODO Status for process to be defined!!! som constant, enum ...
     for OneRepo in MyRepositoryList[0]:
         startTime=timer()
@@ -477,7 +523,7 @@ def exportAllSources_2_Native_XML( ):
         OneSource=MyRepositoryList[0][OneRepo]["ConnectionString"]
         #TODO =for cloud connection there is wrong parsing
         RepositoryID=MyRepositoryList[0][OneRepo]["SourceID"]
-        if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True):
+        if(MyRepositoryList[0][OneRepo]["ToBeBackuped"]==True and "NATIVE" in MyRepositoryList[0][OneRepo]["Actions"]):
             
         #if(MyConnectionsList.doc[item1]["ToBeBackuped"]==True):
             
@@ -489,9 +535,9 @@ def exportAllSources_2_Native_XML( ):
             duration=endTime-startTime
             progressTracking(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
             progressJournal(" \t\tDuration="+elapsedTime(startTime,endTime, duration))
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo),OneRepo, RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
         else:
-            statisticsCollectData ( ">\tItem= "+str(OneRepo), RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
+            statisticsCollectData ( ">\tItem= "+str(OneRepo),OneRepo, RepositoryID,startTime, endTime,duration,str(Size), ret, "NATIVE_XML")
             progressTracking(" _________________________ Skipped="+RepositoryID)
             progressJournal(" ___________________________Skipped="+RepositoryID)
         
@@ -499,7 +545,7 @@ def exportAllSources_2_Native_XML( ):
     durationAll=endTimeAll-startTimeAll    
     progressTracking(" \t\tDuration All NATIVE="+elapsedTime(startTimeAll,endTimeAll, durationAll))
     progressJournal(" \t\tDuration All NATIVE ="+elapsedTime(startTimeAll,endTimeAll, durationAll))
-    statisticsCollectData ( ">\tAll Items Summary= ", "SUM",startTimeAll,endTimeAll,durationAll, str(Size), Success, "NATIVE XML SUMMARY")
+    statisticsCollectData ( ">\tAll Items Summary= ",9999, "SUM",startTimeAll,endTimeAll,durationAll, str(Size), Success, "NATIVE XML SUMMARY")
     return True
 # ======================================
 #  function
@@ -810,7 +856,7 @@ def elapsedTime (myStartTime, myEndTime, myDuration ):
 # Date: 202101
 # Purpose: collect data for final statistics
 # Statistics about Backup Process, <RepoID>, <start>, <end>,<duration>, <Result ><format>  
-def statisticsCollectData ( MyRecordDescription, MyRepoID,MyStartTime, MyEndTime,MyDuration, MySize, MyResult, MyOutputFormat):
+def statisticsCollectData ( MyRecordDescription,MyItemID, MyRepoID,MyStartTime, MyEndTime,MyDuration, MySize, MyResult, MyOutputFormat):
     global TrackingLevel
     global MyJournalFile
     global BackupStatistics
@@ -820,8 +866,29 @@ def statisticsCollectData ( MyRecordDescription, MyRepoID,MyStartTime, MyEndTime
         Result="REPOSITORY SKIPPED"
     else:    
         Result="ERROR"
-    progressTracking(MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
-    progressJournal(MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
+    progressTracking("STATISTIC:"+MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
+    progressJournal("STATISTIC:"+MyRecordDescription+"\t"+"-"+MyRepoID+":"+"\tStart="+str(MyStartTime)+"\tEndTime="+str(MyEndTime)+"\tDuration="+str(MyDuration)+"\tSize="+str(MySize)+"\tResult="+str(Result)+"\tFormat="+MyOutputFormat)
+    BackupStatistics.update(
+        {#str(MyOutputFormat):{
+            str(MyItemID)+'_'+str(MyOutputFormat):{
+                'Date':MyStartTime,
+                #'Report Name':'Statistic report: fullbackup',
+                'item ID':MyItemID,
+                'Repo ID':MyRepoID,
+                'Format':MyOutputFormat,
+                'Start time':MyStartTime,
+                'End Time': MyEndTime,
+                'Duration': MyDuration,
+                'Size':   MySize,
+                'Result':   Result,
+                'Comment':    MyRecordDescription    
+            }
+#}
+    }
+    )
+    
+   
+  
     return True
 # ======================================
 #-------------------------------------------------------------
@@ -829,14 +896,15 @@ def statisticsCollectData ( MyRecordDescription, MyRepoID,MyStartTime, MyEndTime
 # name: statistics-Store Data
 # Date: 202101
 # Purpose: collect data for final statistics
-def statisticsStoteData ( msg):
-    global TrackingLevel
-    global MyJournalFile
-    f=open(MyJournalFile,"a")
-           #print( time.strftime('%Y%m%d-%H:%M-%S'), ":",msg)
-    f.write(time.strftime('%Y%m%d-%H:%M-%S')+ ":"+msg+"\n")
+def statisticsStoreData ( msg):
+    global BackupStatistics
+    global MyStatisticsFile
     
-    f.close()
+    
+    with open(MyStatisticsFile, 'a') as yaml_file:
+        yaml.dump(BackupStatistics, yaml_file, default_flow_style=False)
+    
+       
     return True
 # ======================================
 
@@ -855,6 +923,18 @@ def template ( ):
 
 # -------------------------------------------- main
 def myMain():
+    global BackupStatistics
+    #BackupStatistics.update({'Header':{'Date':"yyyymmdd-hhmm",'Report Name':'Statistic report: fullbackup'}})
+    #BackupStatistics.update({'Report Date':{'Header':{'Date':time.strftime('%Y%m%d-%H%M'),'Report Name':'Statistic report: fullbackup'}}})
+    BackupStatistics.update(
+        {'Statistics':{
+            'Header':{
+                'Date':time.strftime('%Y%m%d-%H%M'),
+                'Report Name':'Statistic report: fullbackup'
+                }
+            }
+        })
+    #:time.strftime('%Y%m%d-%H%M'):
     readConfigFile()
     initBackup()
     
@@ -864,6 +944,7 @@ def myMain():
     performActions("Backup2XML")
     notification()
     closeApp(eaApp)
+    statisticsStoreData(">>>>> statistics saving  <<<<<<")
     return 
 
 

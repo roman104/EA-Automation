@@ -32,15 +32,6 @@ Common Commands:
 # Configuration allow to chose EAP, NATIVE backup based on limitiation particular source
 Sources:
     1:
-        SourceID: "QNAP-001_ea_hp_ci"
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - NOPE
-        Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
-        ConnectionString: "EAConnectString:QNAP-001_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_hp_ci;LazyLoad=1;"
-        
-    2:
         SourceID: "QNAP-001_Agnicoli"
         ToBeBackuped: Yes
         Actions: 
@@ -48,6 +39,16 @@ Sources:
             - EAPX
         Description: "Agnicoli repository"
         ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
+
+    2:
+        SourceID: "QNAP-001_ea_hp_ci"
+        ToBeBackuped: Yes
+        Actions: 
+            - NATIVE
+            - NOPE
+        Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
+        ConnectionString: "EAConnectString:QNAP-001_ea_hp_ci --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_hp_ci;LazyLoad=1;"
+                           
     3:
         SourceID: "QNAP-001_ea_tenis"
         ToBeBackuped: Yes

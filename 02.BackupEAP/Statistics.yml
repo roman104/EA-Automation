@@ -5,41 +5,42 @@
 #Dictionary withh summary results
 #Statistics structure of dictionary
 # <HEADER>
-Header:
-  Date: "YYYYMMDD,MMHH"
-  Report Name: "Report - Backup Summary"
-List Of Data:
-  All Items In Config: 10
-  All Items To be backed up: 2
-  All EAPX Items to be Backuped: 2
-  All XML Items to be Backeuped: 2
-Results:
-  All Items Overview:
-    All Items: 1
-    ALL BAckups succeeded: 1
-    All FAILED Backups: 1
-  EAPX: 
-    All Items to be backuped: 1
-    Number of OK: 1
-    Number of FAILED:
-  NAtive XML:
-    All Items to be backuped: 1
+Report Date: "YYYYMMDD,MMHH"
+  Header:
+    Date: "YYYYMMDD,MMHH"
+    Report Name: "Report - Backup Summary"
+  List Of Data:
+    All Items In Config: 10
+    All Items To be backed up: 2
+    All EAPX Items to be Backuped: 2
+    All XML Items to be Backeuped: 2
+  Results:
+    All Items Overview:
+      All Items: 1
+      ALL BAckups succeeded: 1
+      All FAILED Backups: 1
+    EAPX: 
+      All Items to be backuped: 1
       Number of OK: 1
-      Number for FAILED: 1
-Time information: 
-  Start date Time: "" 
-  End Date, Time: ""
-  Duration:
-  Total size in MB:
+      Number of FAILED:
+    NAtive XML:
+      All Items to be backuped: 1
+        Number of OK: 1
+        Number for FAILED: 1
+  Time information: 
+    Start date Time: "" 
+    End Date, Time: ""
+    Duration:
+    Total size in MB:
 
-Details about all Items:
-  item ID:
-  Repo ID:
-  Format:
-  Start time:
-  End Time:
-  Duration:
-  Size:
-  Result:
-  Comment:
+  Details about all Items:
+    item ID:
+    Repo ID:
+    Format:
+    Start time:
+    End Time:
+    Duration:
+    Size:
+    Result:
+    Comment:
   
