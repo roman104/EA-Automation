@@ -12,6 +12,16 @@
 # Sources: Sparxsystems, enterprise-architect-object-model.pdf
 # Name: Backup EA model into EAPX files
 # Description: Automate routine backups from client side into EAPX files, Native Format, other DBMS repository
+# Experiences:
+# 20210314- 
+# 1.during EAPX model transtion the the opened ea instance is used for backup. It has impact on currently opened ea client.
+# if is frozen during the backup process.
+# workaround - let run the backup durin inactive working hours
+# solution - fing the way how to create independent instance of ea instance not to lock the opend one
+# 2.Authentication
+#  2.1. Model shoul have on Windows Authentication 
+#       - user which running the backup svript have to exists in backuped model with Windows Authentication
+# Otherwise the backup process will be broken and EA will ask for credential 
 # Inputs:  Configuration file= 
 # TODO
     #- Rough Statistics - How much sourcess in Logfile, How Much to be skipped, Reult-How much nackupd successufully, How much Skipped, How Much errors
@@ -583,11 +593,13 @@ def transmitDBMS_2_Native(MySourceString, MyDestinationString, MyLogFile, MyJour
     #    Project = MyRepository.GetProjectInterface()
         #ret=Project.ProjectTransfer(SourceFilePath=MySourceString, TargetFilePath= MyDestinationString, LogFilePath=MyLogFile)
         if(Version=='Release'):
-            MyRepository = eaApp.Repository
+           # MyRepository = eaApp.Repository
             ret1=MyRepository.OpenFile(MySourceString)
+           # OpenFile2 (string FilePath,string Username, string Password)
+    #ShowWindow (long Show) 
             MyProject = MyRepository.GetProjectInterface()
             ret=MyProject.ExportProjectXML(MyDestinationFolderXMLNATIVE)
-            ret2=Myproject.CloseFile()
+            #ret2=Myproject.CloseFile()
                
         else:
                 time.sleep(1)
@@ -941,7 +953,9 @@ def myMain():
     readCmds()
     performActions("Backup2EAPX")
 
-    performActions("Backup2XML")
+   #ERROR - TODO
+   # only 1st repoistory is exporting to native, after that it is error.  I have to investigate how to manage sequence of many repo to be backe uped
+   # performActions("Backup2XML")
     notification()
     closeApp(eaApp)
     statisticsStoreData(">>>>> statistics saving  <<<<<<")
