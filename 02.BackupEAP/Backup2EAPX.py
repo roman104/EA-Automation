@@ -87,6 +87,7 @@ from string import Template
 # definition of global variables
     #Main Configuration file
         #todo = how to make relative path to the config
+#20210404-Config file is #1 imput parameter , see config .launch        
 ##MyConfigFile="M:\\03.Automations\\01.Backups-Clients\\BackupConfig-All-01.yml" 
 MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
 #MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All-02.yml"
@@ -947,6 +948,7 @@ def myMain(myArgs):
             }
         })
     #:time.strftime('%Y%m%d-%H%M'):
+    MyConfigFile=myArgs[1]
     readConfigFile()
     initBackup()
     
