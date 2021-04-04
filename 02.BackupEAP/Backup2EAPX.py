@@ -934,7 +934,7 @@ def template ( ):
 
 
 # -------------------------------------------- main
-def myMain():
+def myMain(myArgs):
     global BackupStatistics
     #BackupStatistics.update({'Header':{'Date':"yyyymmdd-hhmm",'Report Name':'Statistic report: fullbackup'}})
     #BackupStatistics.update({'Report Date':{'Header':{'Date':time.strftime('%Y%m%d-%H%M'),'Report Name':'Statistic report: fullbackup'}}})
@@ -955,7 +955,7 @@ def myMain():
 
    #ERROR - TODO
    # only 1st repoistory is exporting to native, after that it is error.  I have to investigate how to manage sequence of many repo to be backe uped
-   # performActions("Backup2XML")
+   ######## performActions("Backup2XML")
     notification()
     closeApp(eaApp)
     statisticsStoreData(">>>>> statistics saving  <<<<<<")
@@ -963,4 +963,5 @@ def myMain():
 
 
 if __name__ == '__main__':
-    myMain()
+    myArgs=sys.argv
+    myMain(myArgs)

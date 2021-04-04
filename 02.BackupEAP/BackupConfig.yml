@@ -2,19 +2,12 @@
 #date: 20210119-1700
 #Name: Config file
 #Author: Roman Kazicka
-
-#Source repositories
-Sources:
-    1:
-        SourceID: "QNAP-hp_001_ea_hp_ci"
-        ToBeBackuped: No
-        Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
-        ConnectionString: "EAConnectString:QNAP-hp_001_ea_hp_ci --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-hp_001_ea_hp_ci;LazyLoad=1;"
-    2:
-        SourceID: "QNAP-001_Agnicoli"
-        ToBeBackuped: Yes
-        Description: "Agnicoli repository"
-        ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
+#Purpose: Configuration file for application backup of EA repositories
+#Preconditions:
+    #1.Model have to have Windows Authentication switched ON 
+    #2.User who is running the backup script have to have account in model repository
+    #3. If You whant to work parallel with backup on the same machine, You have to run extra ea client, because backup script will occupy one ea instance for its job
+#Destination repositories
 
 Destinations:
     DestinationFolderRoot: "M:\\77.Backup"
@@ -23,7 +16,46 @@ Destinations:
 # Destination type
 #EAPX, DBMS, Native
 Destination Type:
-    - EAPX
-    - DBMS
-    - NATIVE
-#
+    - EAPX  # for sources connected via EAP, ODBC, (CLOUD connection not supported by SPARX)
+    - DBMS  # ODBC, or OLEDB - not tested yet It cloud work feature - Model Transfer 
+    - NATIVE # XML for the same DB engine only!!! You must open model on client side before exporting
+
+# Actions:
+    # setup for defining outputs of backup process
+    # - EAPX  - export to file, limit 2GB of MS Access DB JET 4.0, for connection inputs  in EAPX, ODBC, OLEDB,, CLOUD connection is not supported by SPARX 
+    # - NATIVE - for any model loaded in client.!!! Some elements are not exported -- ModelVIews, Diagram references, Audit logs
+# Common commands are intended for thw whole batch of repositories
+Common Commands:
+    - Notification: 
+        e-mail:
+
+#Source repositories
+# This section allow individualy configure particular items in the list of all sources to be backuped 
+# There are some limitation which could happend per source.
+# e.g. 
+# EAPX has limitation 2GB
+# EAPX can be performed on ODBC source only
+# NATIVE can be performed on ODBC and CLOUD Conenction as well
+# NATIVE will not backup Models VIEW and Audit
+# Configuration allow to chose EAP, NATIVE backup based on limitiation particular source
+Sources:
+    1:
+        SourceID: "QNAP-001_Agnicoli"
+        ToBeBackuped: No
+        Actions: 
+            - NATIVE
+            - EAPX
+        Description: "Agnicoli repository"
+        ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
+
+    
+    2:
+        SourceID: "LAST ITEM"
+        ToBeBackuped: No
+        Actions: 
+            - NATIVE
+            - EAPX
+        Description: ""
+        ConnectionString: "End Of List"
+
+

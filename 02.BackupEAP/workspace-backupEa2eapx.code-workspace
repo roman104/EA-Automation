@@ -3,5 +3,21 @@
 		{
 			"path": "."
 		}
-	]
+	],
+	"settings": {
+		"files.autoSave": "onFocusChange",
+		"workbench.editor.enablePreviewFromCodeNavigation": true,
+		"explorer.incrementalNaming": "smart",
+		"debug.allowBreakpointsEverywhere": true,
+		"debug.inlineValues": true,
+		"launch": {
+
+
+			"configurations": [
+			
+
+			],
+			"compounds": []
+		}
+	}
 }

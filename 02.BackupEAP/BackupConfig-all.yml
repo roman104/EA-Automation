@@ -133,6 +133,30 @@ Sources:
         Description: ""
         ConnectionString: "EAConnectString:hp-017_agnicolicloudservices --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-017_agnicolicloudservices;LazyLoad=1;"
     13:
+        SourceID: "hp-050_MB_7Ds"
+        ToBeBackuped: Yes
+        Actions: 
+            - NATIVE
+            - EAPX
+        Description: "Model Book - model from which was generated the book"
+        ConnectionString: "EAConnectString:hp-050_MB_7Ds --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-050_MB_7Ds;LazyLoad=1;"
+    14:
+        SourceID: "EXOH_014_NewParadigma-ODBC"
+        ToBeBackuped: Yes
+        Actions: 
+            - NOPE
+            - EAPX
+        Description: "New Paradigma of Cooperation - General ideas, concepts, educations"
+        ConnectionString: "ConnectString:EXOH_014_NewParadigma --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=EXOH_014_NewParadigma;LazyLoad=1;"
+    15:
+        SourceID: "DC01_112_PB_MariaDB_ODBC"
+        ToBeBackuped: Yes
+        Actions: 
+            - NOPE
+            - EAPX
+        Description: "PostBank - RKA model"
+        ConnectionString: "EAConnectString:DC01_112_PB_MariaDB_ODBC --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=DC01_112_PB_MariaDB_ODBC;LazyLoad=1;"
+    16:
         SourceID: "LAST ITEM"
         ToBeBackuped: No
         Actions: 
