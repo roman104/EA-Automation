@@ -29,7 +29,13 @@
 # Date: 20201201
 # change log
 
-# LAst Change: 
+# LAst Change: +#
+#20210412- added CLI commands #1-config file, #2 - folder name for repository environment+
+# Example1:   backup2EAPX.py backup4HP.yml HPserver 
+# backup folder will be M:\backup\HPServer\2021\
+# Example2:   backup2EAPX.py backup4HP.yml DC01
+# backup folder will be M:\backup\DC01\2021\
+# It suppose to have separate backup jobs for every repository site
 #20210220- tested, fix the issues with  = mix input formats odbc, cloud, output eapx, xml
 #       - added statistics DIctionary, output to separate file (how to make it in one file YAML, list of Dictionary?)
 #       - added variable for gloval statistics
@@ -87,12 +93,17 @@ from string import Template
 # definition of global variables
     #Main Configuration file
         #todo = how to make relative path to the config
-#20210404-Config file is #1 imput parameter , see config .launch        
 ##MyConfigFile="M:\\03.Automations\\01.Backups-Clients\\BackupConfig-All-01.yml" 
-MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
+#MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All.yml" 
 #MyConfigFile="M:\\13.Automation\\01.Backups\\02.Roman\\01.BAckup2EAPX\\02.BackupEAP\\BackupConfig-All-02.yml"
+#TODO - 20210330- argument from command line - config 
+MyConfigFile_T3="M:\\77.Backup\\01.Automation\\BackupConfig_T3.yml"
 
-#MyConfigFile='r.\BackupConfig.yml' 
+MyConfigFile_sql6="M:\\77.Backup\\01.Automation\\BackupConfig_sql6.yml"
+
+MyConfigFile_SQL01="M:\\77.Backup\\01.Automation\\BackupConfig_sql01.yml"
+MyConfigFile=MyConfigFile_T3
+
 MyConfigRepo=None
 eaApp=None      # activeX handler
 MyRepository=None # Handler to the current repository EA object 
@@ -257,6 +268,7 @@ def readConfigFile():
                 j=j+1
         elif (item=='Destinations'):
             MyDestinationFolderRoot=doc["DestinationFolderRoot"]
+            MyDestinationFolderRoot=MyDestinationFolderRoot+"\\"+sys.argv[2] ##2nd cli argument is repository location
             MyDestinationFolderEAPX=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'EAPX'
             MyDestinationFolderNATIVE=MyDestinationFolderRoot+"\\"+time.strftime('%Y')+'\\'+'NATIVE'
             MyJournalFileFolder=doc["MyJournalFile"]+"\\"+time.strftime('%Y')+"\\"+"Journals"
@@ -935,8 +947,12 @@ def template ( ):
 
 
 # -------------------------------------------- main
-def myMain(myArgs):
+def myMain(myCli ):
     global BackupStatistics
+    global MyConfigFile
+    MyConfigFile=MyConfigFile
+    MyConfigFile=sys.argv[1]  #1-sql0,## 1st command lirameter is config file
+    
     #BackupStatistics.update({'Header':{'Date':"yyyymmdd-hhmm",'Report Name':'Statistic report: fullbackup'}})
     #BackupStatistics.update({'Report Date':{'Header':{'Date':time.strftime('%Y%m%d-%H%M'),'Report Name':'Statistic report: fullbackup'}}})
     BackupStatistics.update(
@@ -948,7 +964,6 @@ def myMain(myArgs):
             }
         })
     #:time.strftime('%Y%m%d-%H%M'):
-    MyConfigFile=myArgs[1]
     readConfigFile()
     initBackup()
     
@@ -965,5 +980,5 @@ def myMain(myArgs):
 
 
 if __name__ == '__main__':
-    myArgs=sys.argv
-    myMain(myArgs)
+    cli=sys.argv
+    myMain(cli)
