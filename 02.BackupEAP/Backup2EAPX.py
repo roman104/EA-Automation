@@ -156,7 +156,7 @@ OutNumOfNATIVEInConfig=0
 OutStartTime=0
 OutEndTime=0
 Duration=0
-
+ReleaseInfo="20210513-1145"
 #Statistics --------------------------------------------------------------------------
 #Dictionary withh summary results
 #Statistics structure of dictionary
@@ -286,10 +286,10 @@ def readConfigFile():
     for s in MyConnectionsList:
         progressTracking("#ListOfSources:"+str(l)+"="+str(s))
         l=l+1
-    progressTracking("=======================Config File Has been red==================================")
+    progressTracking("=======================Config File Has been read==================================")
 
     progressTracking("MyJornalFile="+MyJournalFile)
-    progressJournal("Config File Has been red")
+    progressJournal("Config File Has been read")
     progressJournal("----------------------------------------Backup started")
     progressJournal("MyJournalFile="+MyJournalFile)
     return
@@ -354,8 +354,8 @@ def performActions(MyAction=""):
 # Date:
 # Purpose: just copy and pASTE if you need new function
 def closeApp(eaApp):
-    progressTracking("Close Application")
-    progressJournal("Close Application")
+    progressTracking("Close Application"+ReleaseInfo)
+    progressJournal("Close Application"+ReleaseInfo)
     global MyRepository
     #TODO - close repositories (destination, source)
     #TODO - close ea app reference?
@@ -363,7 +363,16 @@ def closeApp(eaApp):
     # eaApp.Quit()
     if(Version == 'Release'):
         try:
-            MyRepository.Exit()
+            progressTracking("===========================================closeApp-try close eaApp"+ReleaseInfo)
+            progressJournal("=============================================closeApp-try close eaApp"+ReleaseInfo)
+
+            # MyRepository.CloseFile()
+            # MyRepository.Exit()
+            # MyRepository=None
+            eaApp.Repository.Exit()
+            #os.system("taskkill /F /IM EA.exe")
+            
+
         except:
             False
 
@@ -396,7 +405,7 @@ def read_yaml(ConfigFile):
 def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJournal ):
     global MyRepository
     global MyProject
-    global aeApp
+    global eaApp
     global RepositoryID
     global Success
     SizeOfFile=-1
@@ -441,6 +450,7 @@ def TransmitDBMS_2_EAPX(MySourceString, MyDestinationString, MyLogFile, MyJourna
             #error log record to MyJournal file
             progressJournal("TransmitDBMS_2_EAPX EXCEPTION:\n"+"MySourceString="+ MySourceString )
             progressTracking("TransmitDBMS_2_EAPX EXCEPTION:\n"+"-"+MySourceString)
+			eaApp.Repository.Exit()
             #closeApp(eaApp) # close EA
             ret=False
     SizeOfFile=getFileSize(MyDestinationString)       

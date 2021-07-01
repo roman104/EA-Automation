@@ -35,56 +35,6 @@ Common Commands:
 # Configuration allow to chose EAP, NATIVE backup based on limitiation particular source
 Sources:
     1:
-        SourceID: "QNAP-001_Agnicoli"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "Agnicoli repository"
-        ConnectionString: "EAConnectString:QNAP-001_Agnicoli --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_Agnicoli;LazyLoad=1;"
-
-    2:
-        SourceID: "QNAP-001_ea_hp_ci"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - NOPE
-        Description: "HP Repositoru - 2008-2016, >2GB!!!!, only native nackup available"
-        ConnectionString: "EAConnectString:QNAP-001_ea_hp_ci --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_hp_ci;LazyLoad=1;"
-                           
-    3:
-        SourceID: "QNAP-001_ea_tenis"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "Mobile game Tenis"
-        ConnectionString: "EAConnectString:QNAP-001_ea_tenis --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-001_ea_tenis;LazyLoad=1;"
-    4:
-        SourceID: "QNAP-011_ea_astro_chrono_graph"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "astro chrono graph"
-        ConnectionString: "EAConnectString:QNAP-011_ea_astro_chrono_graph --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-011_ea_astro_chrono_graph;LazyLoad=1;"
-    5:
-        SourceID: "QNAP-013_systemthinking-QNAP"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "astro chrono graph"
-        ConnectionString: "EAConnectString:QNAP-013_systemthinking-QNAP --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-013_systemthinking-QNAP;LazyLoad=1;"
-    6:
-        SourceID:  "QNAP-017_AgnicoliCloudServices"
-        ToBeBackuped: No
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "Cloud Services - Sparx Cloud Server"
-        ConnectionString: "EAConnectString:QNAP-017_AgnicoliCloudServices --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=QNAP-017_AgnicoliCloudServices;LazyLoad=1;"
-    7:
         SourceID:  "FIIT_023_STHDF_2020_2021"
         ToBeBackuped: Yes
         Actions: 
@@ -92,71 +42,7 @@ Sources:
             - EAPX
         Description: "ODBC = "
         ConnectionString: "EAConnectString:FIIT_023-STHDF_2020_2021 --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=FIIT_023-STHDF_2020_2021;LazyLoad=1;"
-    8:
-        SourceID: "DC01-CLOUD-023_STHDF_2020_2021"
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - NOPE
-        Description: "DC01=CLOUD=NOT SUPPORTED for EAPX"
-        ConnectionString: "EAConnectString:DC01-CLOUD-023_STHDF_2020_2021 --- ;Connect=Cloud=protocol:http,address:213.81.205.205,port:80;Data Source=023_STHDF_2020_2021;DSN=023_STHDF_2020_2021;"
-    9:
-        SourceID: "HP-001_AGNICOLI "
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: ""
-        ConnectionString: "EAConnectString:HP-001_AGNICOLI --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=HP-001_AGNICOLI;LazyLoad=1;"
-    10:
-        SourceID: "hp-011_ea_astro_chrono_graph"
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: ""
-        ConnectionString: "EAConnectString:hp-011_ea_astro_chrono_graph --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-011_ea_astro_chrono_graph;LazyLoad=1;"
-    11:
-        SourceID: "hp-013_systemthinking "
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: ""
-        ConnectionString: "EAConnectString:hp-013_systemthinking --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-013_systemthinking;LazyLoad=1;"
-    12:
-        SourceID: "017_agnicoliclodservices"
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: ""
-        ConnectionString: "EAConnectString:hp-017_agnicolicloudservices --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-017_agnicolicloudservices;LazyLoad=1;"
-    13:
-        SourceID: "hp-050_MB_7Ds"
-        ToBeBackuped: Yes
-        Actions: 
-            - NATIVE
-            - EAPX
-        Description: "Model Book - model from which was generated the book"
-        ConnectionString: "EAConnectString:hp-050_MB_7Ds --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=hp-050_MB_7Ds;LazyLoad=1;"
-    14:
-        SourceID: "EXOH_014_NewParadigma-ODBC"
-        ToBeBackuped: Yes
-        Actions: 
-            - NOPE
-            - EAPX
-        Description: "New Paradigma of Cooperation - General ideas, concepts, educations"
-        ConnectionString: "ConnectString:EXOH_014_NewParadigma --- DBType=10;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=EXOH_014_NewParadigma;LazyLoad=1;"
-    15:
-        SourceID: "DC01_112_PB_MariaDB_ODBC"
-        ToBeBackuped: Yes
-        Actions: 
-            - NOPE
-            - EAPX
-        Description: "PostBank - RKA model"
-        ConnectionString: "EAConnectString:DC01_112_PB_MariaDB_ODBC --- DBType=0;Connect=Provider=MSDASQL.1;Persist Security Info=False;Data Source=DC01_112_PB_MariaDB_ODBC;LazyLoad=1;"
-    16:
+    2:
         SourceID: "LAST ITEM"
         ToBeBackuped: No
         Actions: 
